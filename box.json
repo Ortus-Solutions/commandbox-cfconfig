@@ -19,7 +19,7 @@
         "tests"
     ],
     "dependencies":{
-        "cfconfig-services":"^0.5.2-alpha"
+        "cfconfig-services":"be"
     },
     "installPaths":{
         "cfconfig-services":"modules\\cfconfig-services"
