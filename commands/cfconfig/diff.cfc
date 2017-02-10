@@ -1,5 +1,5 @@
 /**
-* Export configuration 
+* Diff all configuration between to servers
 */
 component {
 	

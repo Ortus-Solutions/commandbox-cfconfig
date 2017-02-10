@@ -63,3 +63,6 @@ $RECYCLE.BIN/
 *.lnk
 
 /modules
+settings.xml
+*.project
+.settings/

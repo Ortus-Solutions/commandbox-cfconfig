@@ -1,5 +1,5 @@
 /**
-* Export configuration 
+* Add or update a datasource
 */
 component {
 	

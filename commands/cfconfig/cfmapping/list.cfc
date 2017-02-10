@@ -1,5 +1,5 @@
 /**
-* Export configuration 
+* List all data sources
 */
 component {
 	

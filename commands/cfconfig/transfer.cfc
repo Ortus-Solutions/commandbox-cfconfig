@@ -1,5 +1,5 @@
 /**
-* Export configuration 
+* Transfer configuration from one server to another.
 */
 component {
 	

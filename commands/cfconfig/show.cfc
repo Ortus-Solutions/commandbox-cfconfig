@@ -1,5 +1,5 @@
 /**
-* Export configuration 
+* Show a configuration setting for a server
 */
 component {
 	
