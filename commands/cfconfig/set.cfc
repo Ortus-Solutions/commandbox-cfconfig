@@ -44,7 +44,7 @@ component {
 		}
 		oConfig[ 'set#property#' ]( arguments[ property ] )
 			.write( toDetails.path );
-		print.line( toDetails.path );
+
 		print.line( "[#property#] set to [#arguments[ property ]#]" );
 	
 	}

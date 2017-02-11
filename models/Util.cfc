@@ -29,6 +29,11 @@ component singleton {
 				results.version = listLast( format, '@' );
 			}
 			
+			// If this is a Lucee server, assume the server context.  It's just way too much of a pain to specify this every single time!
+			if(  serverInfo.enginename == 'lucee' && !results.format.len() ) {
+				results.format = 'luceeServer';				
+			}
+			
 			if( serverInfo.engineName == 'adobe' ) {
 				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/cfusion/lib';
 			} else if ( results.format == 'luceeServer' ) {
