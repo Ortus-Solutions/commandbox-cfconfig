@@ -10,13 +10,13 @@
 * 
 * When specifying the direct path to the server home, here are the rules based on the engine you're using:
 * For Lucee's web context, point to the folder containing the lucee-web.xml.cfm file.
-* Ex: <webroot>/WEB-INF/lucee/
+* Ex: <webroot>/WEB-INF/lucee
 * 
 * For Lucee's server context, point to be the "lucee-server" folder containing the /context/lucee-server.xml file.
-* Ex: /opt/lucee/lib/lucee-server/
+* Ex: /opt/lucee/lib/lucee-server
 *
-* For Adobe servers, point to the "lib" folder containing the /neo-runtime.xml file.
-* Ex: C:/ColdFusion11/cfusion/lib/
+* For Adobe servers, point to the "cfusion" folder containing the lib/neo-runtime.xml file.
+* Ex: C:/ColdFusion11/cfusion
 * 
 * {code:bash}
 * cfconfig transfer from=/path/to/server/home to=/path/to/another/server/home
@@ -47,9 +47,10 @@
 * {code}
 * 
 * The version number can be left off toFormat and fromFormat when reading or writing to a CFConfig JSON file or a CommandBox server since we already know the version.
+* If you don't specify a Lucee web or Server context, we default to server. Use a format of "luceeWeb" to switch.
 * 
 */
-component aliases='import,export' {
+component {
 	
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
@@ -62,8 +63,8 @@ component aliases='import,export' {
 	*/	
 	function run(
 		string from,
-		string fromFormat,
 		string to,
+		string fromFormat,
 		string toFormat
 	) {
 		arguments.from = arguments.from ?: '';
