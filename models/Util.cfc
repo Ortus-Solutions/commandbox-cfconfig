@@ -35,9 +35,10 @@ component singleton {
 			}
 			
 			if( serverInfo.engineName == 'adobe' ) {
-				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/cfusion/lib';
+				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/cfusion';
+				results.format = 'adobe';
 			} else if ( results.format == 'luceeServer' ) {
-				results.path = serverInfo.serverConfigDir & '/lucee-server/';				
+				results.path = serverInfo.serverConfigDir & '/lucee-server';
 			} else if ( results.format == 'luceeWeb' ) {
 				results.path = serverInfo.webConfigDir;
 			} else {
@@ -58,7 +59,7 @@ component singleton {
 			}
 			
 		// not a CommandBox server, so assume to be a directory
-		} else {
+		} else if( from.len() ){
 			
 			from = fileSystemUtil.resolvePath( from );
 			
@@ -72,6 +73,8 @@ component singleton {
 			}
 			results.path = arguments.from;
 			
+		} else {
+			throw( message="We couldn't find your server.  You didn't give us a path and this directory isn't a CommandBox server.", type="cfconfigException" );			
 		}
 		
 		return results;	
