@@ -76,12 +76,13 @@ component aliases='import,export' {
 		}
 				
 		try {
-			fromDetails = Util.resolveServerDetails( from, fromFormat );
-			toDetails = Util.resolveServerDetails( to, toFormat );
+			var fromDetails = Util.resolveServerDetails( from, fromFormat );
+			var toDetails = Util.resolveServerDetails( to, toFormat );
 			
 			if( !fromDetails.path.len() ) {
 				error( "The location for the 'from' server couldn't be determined.  Please check your spelling." );
 			}
+			
 			if( !directoryExists( fromDetails.path ) && !fileExists( fromDetails.path ) ) {
 				error( "The CF Home directory for the 'from' server doesn't exist.  [#fromDetails.path#]" );				
 			}
