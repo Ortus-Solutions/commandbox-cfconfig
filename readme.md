@@ -29,8 +29,8 @@ Each command allows you to specify a `from` and/or a `to` location, based on wha
 When interacting with CommandBox servers, we try really hard to figure out the type and version of server you're dealing with.  When you simply point to a folder on the hard drive that contains a server home, you'll need to tell us what format you would like the config read or written as.  When writing config, the target directory doesn't need to exist.  We'll create everything for you so you can `import` configuration before you even start the server the first time.  Proper formats look like one of these:
 
 * **adobe@11** - Read/write from an Adobe server, version 11.x
-* **luceeServer@4.5** - Read/write from the Lucee server context, expecting versino 4.5.x
-* **luceeWeb@5** - Read/write from the Lucee web context, expecting versino 5.x.x
+* **luceeServer@4.5** - Read/write from the Lucee server context, expecting version 4.5.x
+* **luceeWeb@5** - Read/write from the Lucee web context, expecting version 5.x.x
 
 ### Export config from a server
 
@@ -84,3 +84,16 @@ cfconfig export myConfig.json
 # Edit JSON file directly
 cfconfig set adminPassword=commandbox to=myConfig.json
 ```
+
+## Future Development
+
+This is very much a work in progess.  Features yet to come include:
+
+* Diff settings between any two servers (or a server an a JSON file)
+* Better detection of the engine version by inspecting the files present so you don't have to give as many hints to the library
+* Listen to CommandBox server installs, and auto-migrate settings when a new engine is installed.
+* More complete support for all engines. (looking for community contributions for this since there's so much to support).
+* If you think of something else, please submit a ticket!
+
+And remember, this project is just the CLI component. If you'd like to build a custom process of managing your server's config, the entire service layer is available as a separate project, which can operate outside of CommandBox. https://www.forgebox.io/view/cfconfig-services
+
