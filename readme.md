@@ -5,7 +5,7 @@
 1. Generic JSON storage of any CF engine's settings
 2. Engine-specific providers for all major engines to convert their config to and from the generic JSON format
 
-This does not use RDS and doesn't need the server to be running.  It just needs access to the installation folder for a server to locate its config files.  You will need to restart the server for the change to take affect unless you have configured the server to scan it's config files for changes. 
+This does not use RDS and doesn't need the server to be running.  It just needs access to the installation folder for a server to locate its config files.  You will need to restart the server for the change to take effect unless you have configured the server to scan it's config files for changes. 
 
 ## Possible Uses
 
