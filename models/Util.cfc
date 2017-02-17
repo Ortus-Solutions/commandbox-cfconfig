@@ -3,6 +3,7 @@ component singleton {
 	property name='serverService' inject='serverService';
 	property name='shell' inject='shell';
 	property name='fileSystemUtil' inject='fileSystem';
+	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	
 	
 	function resolveServerDetails( string from, string format ) {
@@ -62,15 +63,22 @@ component singleton {
 		} else if( from.len() ){
 			
 			from = fileSystemUtil.resolvePath( from );
+			// Try to infer the format and version based on the files in place
+			var guessedFormat = CFConfigService.guessFormat( from );
+			// Use these as defaults
+			results.format = guessedFormat.format;
+			results.version = guessedFormat.version;
 			
-			// If the path is a JSON file, we know this.
-			if( from.listLast( '.' ) == 'JSON' ) {
-				results.format = 'JSON';
-				results.version = 0;	
-			} else {
-				results.format = listFirst( format, '@' );
-				results.version = ( format.listLen( '@' ) > 1 ? listLast( format, '@' ) : 0 );
+			// Overrid with user-provided format
+			if( format.len() ) {
+				results.format = listFirst( format, '@' );				
 			}
+			
+			// Overrid with user-provided version
+			if( format.listLen( '@' ) > 1 ) {
+				results.version = listLast( format, '@' );				
+			}
+			
 			results.path = arguments.from;
 			
 		} else {

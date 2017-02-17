@@ -90,7 +90,6 @@ cfconfig set adminPassword=commandbox to=myConfig.json
 This is very much a work in progess.  Features yet to come include:
 
 * Diff settings between any two servers (or a server an a JSON file)
-* Better detection of the engine version by inspecting the files present so you don't have to give as many hints to the library
 * Listen to CommandBox server installs, and auto-migrate settings when a new engine is installed.
 * More complete support for all engines. (looking for community contributions for this since there's so much to support).
 * If you think of something else, please submit a ticket!
