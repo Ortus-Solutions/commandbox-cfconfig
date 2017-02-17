@@ -82,6 +82,17 @@ component singleton {
 			results.path = arguments.from;
 			
 		} else {
+			// Is the current working directory of the server identify as a server home?
+			var guessedFormat = CFConfigService.guessFormat( shell.pwd() );
+			
+			if( guessedFormat.format.len() ) {
+				return results = {
+					format : guessedFormat.format,
+					version : guessedFormat.version,
+					path : shell.pwd()
+				};
+			}
+			
 			throw( message="We couldn't find your server.  You didn't give us a path and this directory isn't a CommandBox server.", type="cfconfigException" );			
 		}
 		
