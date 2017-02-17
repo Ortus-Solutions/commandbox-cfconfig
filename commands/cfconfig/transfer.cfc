@@ -43,7 +43,7 @@
 * - luceeServer@4.5
 * 
 * {code:bash}
-* cfconfig transfer from=/path/to/.CFConfig.json to=/path/to/server/home toFormat=lucee@5.1
+* cfconfig transfer from=/path/to/.CFConfig.json to=/path/to/server/home toFormat=luceeServer@5.1
 * {code}
 * 
 * The version number can be left off toFormat and fromFormat when reading or writing to a CFConfig JSON file or a CommandBox server since we already know the version.
