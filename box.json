@@ -12,7 +12,8 @@
     "scripts":{
         "postVersion":"package set location='bdw429s/commandbox-cfconfig#v`package version`'",
         "onRelease":"publish",
-        "postPublish":"!git push --follow-tags"
+        "postPublish":"!git push --follow-tags",
+		"install":"install ID=C:\\Users\\Brad.development\\Documents\\GitHub\\commandbox-cfconfig directory=\"D:\\.Command Box\\cfml\\modules\" --force && r"
     },
     "ignore":[
         "**/.*",
