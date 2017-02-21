@@ -1,5 +1,12 @@
 /**
-* Delete a CF Mapping
+* Delete a CF Mapping.  Identify the mapping uniquely by the virtual path.
+* 
+* {code}
+* cfconfig cfmapping delete /foo
+* cfconfig cfmapping delete /foo serverName
+* cfconfig cfmapping delete /foo /path/to/server/home
+* {code}
+*
 */
 component {
 	
@@ -27,13 +34,16 @@ component {
 		if( !toDetails.path.len() ) {
 			error( "The location for the server couldn't be determined.  Please check your spelling." );
 		}
-				
+		
+		// Read existing config
 		var oConfig = CFConfigService.determineProvider( toDetails.format, toDetails.version )
 			.read( toDetails.path );
 
+		// Get the CF mappings and remove the requested one
 		var CFMappings = oConfig.getCFMappings() ?: {};
 		CFMappings.delete( virtual );	
 		
+		// Set remaining mappings back and save
 		oConfig.setCFMappings( CFMappings )
 			.write( toDetails.path );		
 			

@@ -85,6 +85,14 @@ cfconfig export myConfig.json
 cfconfig set adminPassword=commandbox to=myConfig.json
 ```
 
+### Manage CF Mappings
+There are three commands to manage CF mappings.
+```
+cfconfig cfmapping list
+cfconfig cfmapping save /foo C:/foo
+cfconfig cfmapping delete /foo
+```
+
 ## Future Development
 
 This is very much a work in progess.  Features yet to come include:

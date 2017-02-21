@@ -1,5 +1,18 @@
 /**
-* List all CF Mappings for a server
+* List all CF Mappings for a server.
+* 
+* {code}
+* cfconfig cfmapping list
+* cfconfig cfmapping list from=serverName
+* cfconfig cfmapping list from==/path/to/server/home
+* {code}
+* 
+* To receive the data back as JSON, use the --JSON flag.
+* 
+* {code}
+* cfconfig cfmapping list --JSON
+* {code}
+* 
 */
 component {
 	
@@ -9,6 +22,7 @@ component {
 	/**
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @fromFormat The format to read from. Ex: LuceeServer@5
+	* @JSON Set to try to receive mappings back as a parsable JSON object
 	*/
 	function run(
 		string from,
@@ -32,17 +46,21 @@ component {
 			error( "The CF Home directory for the server doesn't exist.  [#fromDetails.path#]" );				
 		}
 		
+		// Read the config
 		var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version )
 			.read( fromDetails.path );
-			
+
+		// Get the mappings, remembering it can be null
 		var CFMappings = oConfig.getCFMappings() ?: {};
 	
+		// If outputting JSON
 		if( arguments.JSON ?: false ) {
 			print.line( formatterUtil.formatJSON( CFMappings ) );
 		} else {
 			if( CFMappings.len() ) {
 				for( var CFMapping in CFMappings ) {
 					var CFMappingDetails = CFMappings[ CFMapping ];
+					// The only guaranteed piece of info is virtual
 					print.boldLine( 'Virtual Path: #CFMapping#' );
 					if( !isNull( CFMappingDetails.physical ) ) { print.indentedLine( 'Physical Path: #CFMappingDetails.physical#' ); }
 					if( !isNull( CFMappingDetails.archive ) ) { print.indentedLine( 'Archive Path: #CFMappingDetails.archive#' ); }

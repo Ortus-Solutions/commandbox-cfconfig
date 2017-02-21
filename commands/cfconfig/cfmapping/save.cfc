@@ -1,10 +1,18 @@
 /**
-* Add or update a CF Mapping
+* Add a mew CF mapping or update an existing CF Mapping.  Existing mappings will be matched based on the virtual path.
+* 
+* {code}
+* cfconfig cfmapping save /foo C:/foo/bar
+* cfconfig cfmapping save virtual=/foo physical=C:/foo/bar to=serverName
+* cfconfig cfmapping save virtual=/foo physical=C:/foo/bar to=/path/to/server/home
+* {code}
+*
 */
 component {
 	
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
+	
 	/**
 	* @virtual The virtual path such as /foo
 	* @physical The physical path that the mapping points to
@@ -42,14 +50,16 @@ component {
 			error( "The location for the server couldn't be determined.  Please check your spelling." );
 		}
 				
-		var oConfig = CFConfigService.determineProvider( toDetails.format, toDetails.version )
-			.read( toDetails.path );
+		// Read existing config
+		var oConfig = CFConfigService.determineProvider( toDetails.format, toDetails.version );
+			//.read( toDetails.path );
 		
 		// Preserve this as a struct, not an array
 		var CFMappingParams = duplicate( {}.append( arguments ) );
 		CFMappingParams.delete( 'to' );
 		CFMappingParams.delete( 'toFormat' );
-			
+		
+		// Add mapping to config and save.
 		oConfig.addCFMapping( argumentCollection = CFMappingParams )
 			.write( toDetails.path );
 				
