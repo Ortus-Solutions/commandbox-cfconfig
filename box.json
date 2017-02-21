@@ -1,8 +1,8 @@
 {
     "name":"CFConfig CLI",
-    "version":"0.1.5-alpha",
+    "version":"0.2.0-alpha",
     "author":"Brad Wood",
-    "location":"bdw429s/commandbox-cfconfig#v0.1.5-alpha",
+    "location":"bdw429s/commandbox-cfconfig#v0.2.0-alpha",
     "homepage":"https://github.com/bdw429s/commandbox-cfconfig",
     "slug":"commandbox-cfconfig",
     "shortDescription":"A CLI library for importing, exporting, trasnferring, and otherwise managing CF engine configuration.",
@@ -13,7 +13,7 @@
         "postVersion":"package set location='bdw429s/commandbox-cfconfig#v`package version`'",
         "onRelease":"publish",
         "postPublish":"!git push --follow-tags",
-		"install":"install ID=C:\\Users\\Brad.development\\Documents\\GitHub\\commandbox-cfconfig directory=\"D:\\.Command Box\\cfml\\modules\" --force && r"
+        "install":"install ID=C:\\Users\\Brad.development\\Documents\\GitHub\\commandbox-cfconfig directory=\"D:\\.Command Box\\cfml\\modules\" --force && r"
     },
     "ignore":[
         "**/.*",
