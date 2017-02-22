@@ -78,6 +78,7 @@ component {
 		// propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer
 		for( var row in qryDiff ) {
 			if( row.bothPopulated || row.fromOnly || row.toOnly ) {
+				print.text( row.propertyName & ': ' );
 				print.text( ( row.toOnly ? 'N/A' : row.FromValue ) );
 				
 				if( row.valuesMatch ) {
