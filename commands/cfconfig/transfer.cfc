@@ -103,6 +103,8 @@ component {
 			
 		} catch( cfconfigException var e ) {
 			error( e.message, e.detail ?: '' );
+		} catch( cfconfigNoProviderFound var e ) {
+			error( e.message, e.detail ?: '' );
 		}
 		
 		print.greenLine( 'Config transfered!' );

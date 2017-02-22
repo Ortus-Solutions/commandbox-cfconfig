@@ -34,8 +34,12 @@ component {
 			error( "The CF Home directory for the server doesn't exist.  [#fromDetails.path#]" );				
 		}
 		
-		var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version )
-			.read( fromDetails.path );
+		try {
+			var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version )
+				.read( fromDetails.path );
+		} catch( cfconfigNoProviderFound var e ) {
+			error( e.message, e.detail ?: '' );
+		}
 		
 		// Displaying a single property
 		if( property.len() ) {

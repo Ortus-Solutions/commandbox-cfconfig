@@ -81,6 +81,10 @@ component singleton {
 			
 			results.path = arguments.from;
 			
+			if( !results.format.len() ) {
+				throw( message="You gave the location of the server, but we couldn't figure out the format to use.  Please give us some more info.", type="cfconfigException" );
+			}
+			
 		} else {
 			// Is the current working directory of the server identify as a server home?
 			var guessedFormat = CFConfigService.guessFormat( shell.pwd() );

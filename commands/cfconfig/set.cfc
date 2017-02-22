@@ -36,7 +36,11 @@ component {
 			error( "The location for the server couldn't be determined.  Please check your spelling." );
 		}
 				
-		var oConfig = CFConfigService.determineProvider( toDetails.format, toDetails.version );
+		try {
+			var oConfig = CFConfigService.determineProvider( toDetails.format, toDetails.version );
+		} catch( cfconfigNoProviderFound var e ) {
+			error( e.message, e.detail ?: '' );
+		}
 		
 		var validProperties = oConfig.getConfigProperties();
 		if( !validProperties.findNoCase( property ) ) {
