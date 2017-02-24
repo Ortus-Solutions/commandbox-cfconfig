@@ -52,7 +52,11 @@ component {
 				
 		// Read existing config
 		var oConfig = CFConfigService.determineProvider( toDetails.format, toDetails.version );
-			//.read( toDetails.path );
+		try {
+			oConfig.read( toDetails.path );	
+		} catch( any e ) {
+			// Handle this better by specifically checking if there's config 
+		}
 		
 		// Preserve this as a struct, not an array
 		var CFMappingParams = duplicate( {}.append( arguments ) );
