@@ -47,6 +47,7 @@ component {
 	* @valuesMatch Display properties that have matching values
 	* @valuesDiffer Display properties that have differing values
 	* @all Display all properties
+	* @verbose Show details for datasources and CF Mappings
 	*/	
 	function run(
 		string from,
@@ -59,7 +60,8 @@ component {
 		boolean bothEmpty = false,
 		boolean valuesMatch = false,
 		boolean valuesDiffer = false,
-		boolean all = false
+		boolean all = false,
+		boolean verbose = false
 	) {
 		arguments.from = arguments.from ?: '';
 		arguments.to = arguments.to ?: '';
@@ -134,9 +136,21 @@ component {
 				& '      '
 				& printColumnValue( '"To" Server', toColumnWidth ) );
 	
+		var previousPrefix = '~';
 		// propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer
 		for( var row in qryDiff ) {
 			
+			if( row.propertyName.startsWith( previousPrefix )
+				&& ( row.propertyName.startsWith( 'CFMappings-' ) || row.propertyName.startsWith( 'datasources-' ) ) ) {
+				var nested = true;
+				// If not verbose output, skip nested values
+				if( !verbose ) {
+					continue;
+				}
+			} else {
+				var nested = false;
+				previousPrefix = row.propertyName;
+			}
 			
 			if( 
 				( fromOnly && row.fromOnly )
@@ -166,11 +180,12 @@ component {
 				}
 				
 				print.line( 
-					printColumnValue( row.propertyName & ': ', longestProp )
+					printColumnValue( ( nested ? '  ' : '' ) & row.propertyName & ': ', longestProp )
 					& printColumnValue( ( row.toOnly || row.bothEmpty ? '-' : row.FromValue ), fromColumnWidth )
 					& equality
 					& printColumnValue( ( row.fromOnly || row.bothEmpty ? '-' : row.toValue ), toColumnWidth ),
 					lineColor
+					
 				);
 																
 			}
