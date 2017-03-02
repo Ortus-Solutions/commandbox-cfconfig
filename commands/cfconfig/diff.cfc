@@ -141,7 +141,12 @@ component {
 		for( var row in qryDiff ) {
 			
 			if( row.propertyName.startsWith( previousPrefix )
-				&& ( row.propertyName.startsWith( 'CFMappings-' ) || row.propertyName.startsWith( 'datasources-' ) ) ) {
+				&& ( 
+					row.propertyName.startsWith( 'CFMappings-' ) 
+					|| row.propertyName.startsWith( 'datasources-' ) 
+					|| row.propertyName.startsWith( 'mailServers-' )
+					) 
+				) {
 				var nested = true;
 				// If not verbose output, skip nested values
 				if( !verbose ) {
