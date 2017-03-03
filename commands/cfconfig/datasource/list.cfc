@@ -55,7 +55,7 @@ component {
 	
 		// If outputting JSON
 		if( arguments.JSON ?: false ) {
-			print.line( formatterUtil.formatJSON( datasource ) );
+			print.line( formatterUtil.formatJSON( datasources ) );
 		} else {
 			if( datasources.len() ) {
 				for( var datasource in datasources ) {
@@ -63,9 +63,13 @@ component {
 					print.boldLine( 'Name: #datasource#' );
 					print.indentedLine( 'DB Driver: #datasourceDetails.dbdriver#' );
 					if( !isNull( datasourceDetails.host ) && len( datasourceDetails.host ) ) { print.indentedLine( 'Host: #datasourceDetails.host#' ); }
+					if( !isNull( datasourceDetails.port ) && len( datasourceDetails.port ) ) { print.indentedLine( 'Port: #datasourceDetails.port#' ); }
 					if( !isNull( datasourceDetails.database ) && len( datasourceDetails.database ) ) { print.indentedLine( 'Database: #datasourceDetails.database#' ); }
+					if( !isNull( datasourceDetails.username ) && len( datasourceDetails.username ) ) { print.indentedLine( 'Username: #datasourceDetails.username#' ); }
+					if( !isNull( datasourceDetails.password ) && len( datasourceDetails.password ) ) { print.indentedLine( 'Password: #datasourceDetails.password#' ); }
 					if( datasourceDetails.dbdriver == 'other' ) {
-						if( !isNull( datasourceDetails.dsn ) && len( datasourceDetails.dsn ) ) { print.indentedLine( 'JDBC URL: #datasourceDetails.dsn#' ); }						
+						if( !isNull( datasourceDetails.dsn ) && len( datasourceDetails.dsn ) ) { print.indentedLine( 'JDBC URL: #datasourceDetails.dsn#' ); }
+						if( !isNull( datasourceDetails.class ) && len( datasourceDetails.class ) ) { print.indentedLine( 'Class: #datasourceDetails.class#' ); }					
 					}
 				print.line();
 				}
