@@ -41,7 +41,13 @@ component {
 		} catch( cfconfigNoProviderFound var e ) {
 			error( e.message, e.detail ?: '' );
 		}
-		
+
+		try {
+			oConfig.read( toDetails.path );	
+		} catch( any e ) {
+			// Handle this better by specifically checking if there's config 
+		}
+				
 		var validProperties = oConfig.getConfigProperties();
 		if( !validProperties.findNoCase( property ) ) {
 			error( "[#property#] is not a valid property" );

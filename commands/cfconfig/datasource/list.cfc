@@ -43,7 +43,7 @@ component {
 		}
 		
 		if( !directoryExists( fromDetails.path ) && !fileExists( fromDetails.path ) ) {
-			error( "The CF Home directory for the server doesn't exist.  [#fromDetails.path#]" );				
+			error( "The CF Home directory for the server doesn't exist.  [#fromDetails.path#]" );
 		}
 		
 		// Read the config
