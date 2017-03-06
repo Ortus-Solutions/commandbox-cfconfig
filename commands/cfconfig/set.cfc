@@ -8,6 +8,7 @@ component {
 	
 	/**
 	* @_ name of the property to set.
+	* @_.optionsUDF propertyComplete
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @toFormat The format to write to. Ex: LuceeServer@5
 	*/	
@@ -57,6 +58,10 @@ component {
 
 		print.line( "[#property#] set to [#arguments[ property ]#]" );
 	
+	}
+
+	function propertyComplete() {
+		return getInstance( 'BaseConfig@cfconfig-services' ).getConfigProperties();
 	}
 	
 }

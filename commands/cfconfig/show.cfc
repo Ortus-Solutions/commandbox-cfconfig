@@ -8,6 +8,7 @@ component {
 	
 	/**
 	* @property name of the property to view.  Empty for everything.
+	* @property.optionsUDF propertyComplete
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @fromFormat The format to read from. Ex: LuceeServer@5
 	*/	
@@ -56,6 +57,10 @@ component {
 		} else {
 			print.line( oConfig.toString() );
 		}
+	}
+
+	function propertyComplete() {
+		return getInstance( 'BaseConfig@cfconfig-services' ).getConfigProperties();
 	}
 	
 }
