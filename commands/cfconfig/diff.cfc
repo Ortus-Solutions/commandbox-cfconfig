@@ -154,7 +154,7 @@ component {
 				}
 			} else {
 				var nested = false;
-				previousPrefix = row.propertyName;
+				previousPrefix = row.propertyName & '-';
 			}
 			
 			if( 
