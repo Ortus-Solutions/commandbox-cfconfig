@@ -108,7 +108,7 @@ cfconfig cfmapping save /foo C:/foo
 cfconfig cfmapping delete /foo
 ```
 
-### Manage datasources
+### Manage Datasources
 There are three commands to manage datasources.
 ```
 cfconfig datasource list
