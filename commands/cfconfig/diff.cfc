@@ -144,7 +144,8 @@ component {
 				&& ( 
 					row.propertyName.startsWith( 'CFMappings-' ) 
 					|| row.propertyName.startsWith( 'datasources-' ) 
-					|| row.propertyName.startsWith( 'mailServers-' )
+					|| row.propertyName.startsWith( 'mailServers-' ) 
+					|| row.propertyName.startsWith( 'caches-' )
 					) 
 				) {
 				var nested = true;
