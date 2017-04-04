@@ -93,11 +93,34 @@ cfconfig cfmapping save /foo C:/foo
 cfconfig cfmapping delete /foo
 ```
 
+### Manage datasources
+There are three commands to manage datasources.
+```
+cfconfig datasource list
+cfconfig datasource save myDS
+cfconfig datasource delete myDS
+```
+
+### Manage Mail Servers
+There are three commands to manage Mail Servers.
+```
+cfconfig mailserver list
+cfconfig mailserver save smtp.mail.com
+cfconfig mailserver delete smtp.mail.com
+```
+
+### Manage Lucee Caches
+There are three commands to manage Lucee caches.
+```
+cfconfig cache list
+cfconfig cache save myCache
+cfconfig cache delete myCache
+```
+
 ## Future Development
 
 This is very much a work in progess.  Features yet to come include:
 
-* Diff settings between any two servers (or a server an a JSON file)
 * Listen to CommandBox server installs, and auto-migrate settings when a new engine is installed.
 * More complete support for all engines. (looking for community contributions for this since there's so much to support).
 * If you think of something else, please submit a ticket!
