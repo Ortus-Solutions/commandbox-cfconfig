@@ -9,7 +9,7 @@
 
 <img src="https://www.ortussolutions.com/__media/logos/CfConfigLogo300.png" class="img-thumbnail"/>
 
->Copyright 2012 by Ortus Solutions, Corp - https://www.ortussolutions.com
+>Copyright 2017 by Ortus Solutions, Corp - https://www.ortussolutions.com
 
 This is a CommandBox module that provides a CLI for reading, writing, and storing configuration for all CF engines.
 
