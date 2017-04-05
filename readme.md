@@ -1,4 +1,13 @@
-﻿This is a CommandBox module that provides a CLI for reading, writing, and storing configuration for all CF engines.
+```
+   ____ _____ ____             __ _          ____ _     ___ 
+  / ___|  ___/ ___|___  _ __  / _(_) __ _   / ___| |   |_ _|
+ | |   | |_ | |   / _ \| '_ \| |_| |/ _` | | |   | |    | | 
+ | |___|  _|| |__| (_) | | | |  _| | (_| | | |___| |___ | | 
+  \____|_|   \____\___/|_| |_|_| |_|\__, |  \____|_____|___|
+                                    |___/                   
+```
+
+This is a CommandBox module that provides a CLI for reading, writing, and storing configuration for all CF engines.
 
 ## Main Features
 
