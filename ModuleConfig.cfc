@@ -16,7 +16,7 @@ component {
 
 	function configure() {
 		settings = {
-			
+			'exportOnStop' = false
 		};
 		
 		interceptors = [
