@@ -18,5 +18,9 @@ component {
 		settings = {
 			
 		};
+		
+		interceptors = [
+			{ class='#moduleMapping#.interceptors.ConfigLoader' }
+		];
 	}
 }
