@@ -1,8 +1,8 @@
 {
     "name":"CFConfig CLI",
-    "version":"0.7.2-alpha",
+    "version":"0.7.3-alpha",
     "author":"Brad Wood",
-    "location":"bdw429s/commandbox-cfconfig#v0.7.2-alpha",
+    "location":"bdw429s/commandbox-cfconfig#v0.7.3-alpha",
     "homepage":"https://github.com/bdw429s/commandbox-cfconfig",
     "slug":"commandbox-cfconfig",
     "shortDescription":"A CLI library for importing, exporting, transferring, and otherwise managing CF engine configuration.",
