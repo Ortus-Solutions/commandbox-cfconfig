@@ -2,9 +2,9 @@
 * Delete a datasource.  Identify the datasource uniquely by the name.
 * 
 * {code}
-* cfconfig datasource delete /foo
-* cfconfig datasource delete /foo serverName
-* cfconfig datasource delete /foo /path/to/server/home
+* cfconfig datasource delete foo
+* cfconfig datasource delete foo serverName
+* cfconfig datasource delete foo /path/to/server/home
 * {code}
 *
 */
