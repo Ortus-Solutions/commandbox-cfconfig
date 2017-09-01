@@ -104,6 +104,12 @@ component {
 				toVersion	= toDetails.version
 			);
 			
+			qryDiff = queryExecute( 
+				'SELECT * FROM qryDiff ORDER BY propertyName',
+				{},
+				{ dbtype='query' }
+			 );
+			
 		} catch( cfconfigException var e ) {
 			error( e.message, e.detail ?: '' );
 		} catch( cfconfigNoProviderFound var e ) {
