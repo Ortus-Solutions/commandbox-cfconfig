@@ -164,6 +164,11 @@ component {
 			// Append file name
 			.listAppend( '.cfconfig.json', '/' );
 			
+		// On *nix OSes we need the leading slash back
+		if( serverInfo.webroot.left( 1 ) == '/' ) {
+			conventionLocation = '/' & conventionLocation;
+		}
+			
 		if( !CFConfigFile.len()
 			&& fileExists( conventionLocation ) ) {
 				
