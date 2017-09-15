@@ -16,7 +16,8 @@ component {
 
 	function configure() {
 		settings = {
-			'exportOnStop' = false
+			'exportOnStop' = false,
+			'autoTransferOnUpgrade' = true
 		};
 		
 		interceptors = [

@@ -4,9 +4,21 @@ component {
 	property name='systemSettings'	inject='SystemSettings';
 	property name='consoleLogger'	inject='logbox:logger:console';
 	property name='ConfigService'	inject='ConfigService';
-	
+	property name='semanticVersion'	inject='provider:semanticVersion@semver';
+	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
+		
 	function onServerInstall( interceptData ) {
 		var CFConfigFile = findCFConfigFile( interceptData.serverInfo );
+		
+		// Get the config settings
+		var configSettings = ConfigService.getconfigSettings();
+
+		// Does the user want us to export setting when the server stops?
+		var autoTransferOnUpgrade = configSettings.modules[ 'commandbox-cfconfig' ].autoTransferOnUpgrade ?: true; 
+		
+		// Clean up some slash nonsense
+		interceptData.installDetails.installDir = interceptData.installDetails.installDir.replace( '\', '/', 'all' );
+		interceptData.serverInfo.customServerFolder = interceptData.serverInfo.customServerFolder.replace( '\', '/', 'all' );
 		
 		// If we found a CFConfig JSON file, let's import it!
 		if( CFConfigFile.len() ) {
@@ -45,6 +57,120 @@ component {
 			} else {
 				consoleLogger.error( 'CFConfig file doesn''t contain valid JSON! [#CFConfigFile#]' );
 			}
+		// No JSON file found to import and this is the initial install
+		} else if( interceptData.installDetails.initialInstall
+			// And the user wants to auto transfer setting to a new server on upgrade
+			&& autoTransferOnUpgrade
+			// The the server is being installed in the default directory (as opposed to a custom server home)
+			&& interceptData.installDetails.installDir.find( interceptData.serverInfo.customServerFolder )
+			// And this is a standard engine as opposed to some custom war that might not even be CFML!
+			&& interceptData.installDetails.engineName.len() ) {
+			
+			var thisEngine = interceptData.installDetails.engineName;
+			var thisVersion = interceptData.installDetails.version;
+			var thisInstallDir = interceptData.installDetails.installDir;
+			
+			// This will get a list of all engine-versions we've ever started for this server
+			// based on what folders exist in the custom server folder
+			var serverDirectories = directoryList( interceptData.serverInfo.customServerFolder );
+			var previousServerFolder = '';
+			var previousVersion = '';
+
+			serverDirectories.each( function( path ){
+				// Curse you Perry the Mixaslashapus
+				path = path.replace( '\', '/', 'all' );
+				
+				// Ignore ourselves
+				if( path != thisInstallDir ) {
+					var engineTagFile = path & '/.engineInstall';
+					if( fileExists( engineTagFile ) ) {
+						var engineTag = fileRead( engineTagFile ).trim();
+						if( engineTag.listLen( '@' ) > 1 ) {
+							// Version is everything after the last @
+							var otherVersion = engineTag.listLast( '@' );
+							// Engine is everything up to the last @.  Could be @ortus/customSlug@1.2.3
+							var otherEngine =  engineTag.replace( '@#otherVersion#', '' );
+							
+							// If the engine matches (lucee=lucee)
+							if( thisEngine == otherEngine
+								// and EITHER we haven't come across another version of this engine yet
+								&& ( !previousVersion.len()
+									// OR the currently installed version is newer than the one we just found
+									|| ( semanticVersion.isNew( otherVersion, thisVersion )
+											// And the one we just found is newer than the previous ones we found
+											&& semanticVersion.isNew( previousVersion, otherVersion )
+									    )
+									)
+								) {
+								
+								// Assert: Here is the most recent previous version of this engine we've found thus far.
+								previousVersion = otherVersion;
+								previousServerFolder = path;
+								
+							} // Version of interest
+							
+						} // Enging tag has proper contents
+					} // enginet tag exists
+				} // ignore ourselves
+			} ); // server dir each
+
+			// Did we find a previous version of this engine?
+			if( previousServerFolder.len() ) {
+				consoleLogger.warn( 'Auto importing settings from your previous [#thisEngine#@#previousVersion#] server.' );
+				consoleLogger.warn( 'Turn off this feature with [config set modules.commandbox-cfconfig.autoTransferOnUpgrade=false]' );
+				
+				try {
+					
+					if( thisEngine == 'adobe' ) {
+						
+						if( interceptData.serverInfo.debug ) {
+							consoleLogger.debug( 'Copying from [#previousServerFolder#/WEB-INF/cfusion] to [#thisInstallDir#/WEB-INF/cfusion]' );
+						}
+						CFConfigService.transfer(
+							from		= previousServerFolder & '/WEB-INF/cfusion',
+							to			= thisInstallDir & '/WEB-INF/cfusion',
+							fromFormat	= 'adobe',
+							toFormat	= 'adobe',
+							fromVersion	= previousVersion,
+							toVersion	= thisVersion
+						);
+						
+					} else if ( thisEngine == 'lucee' ) {
+											
+						
+						if( interceptData.serverInfo.debug ) {
+							consoleLogger.debug( 'Copying from [#previousServerFolder#/WEB-INF/lucee-server] to [#thisInstallDir#/WEB-INF/lucee-server]' );
+						}
+						CFConfigService.transfer(
+							from		= previousServerFolder & '/WEB-INF/lucee-server',
+							to			= thisInstallDir & '/WEB-INF/lucee-server',
+							fromFormat	= 'luceeServer',
+							toFormat	= 'luceeServer',
+							fromVersion	= previousVersion,
+							toVersion	= thisVersion
+						);
+											
+						
+						if( interceptData.serverInfo.debug ) {
+							consoleLogger.debug( 'Copying from [#previousServerFolder#/WEB-INF/lucee-web] to [#thisInstallDir#/WEB-INF/lucee-web]' );
+						}
+						CFConfigService.transfer(
+							from		= previousServerFolder & '/WEB-INF/lucee-web',
+							to			= thisInstallDir & '/WEB-INF/lucee-web',
+							fromFormat	= 'luceeWeb',
+							toFormat	= 'luceeWeb',
+							fromVersion	= previousVersion,
+							toVersion	= thisVersion
+						);
+					
+					}
+				} catch( any var e ) {
+					consoleLogger.error( 'Oh, snap! We had an error auto-importing your settings.  Please report this error.' );
+					consoleLogger.error( e.message );
+					consoleLogger.error( e.detail );
+					consoleLogger.error( '    ' & e.tagContext[ 1 ].template & ':' &  e.tagContext[ 1 ].line );
+				}
+			}				
 		}
 
 		// Look for individual CFConfig settings to import.
