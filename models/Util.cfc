@@ -42,7 +42,7 @@ component singleton {
 				results.format = 'luceeServer';				
 			}
 			
-			if( serverInfo.engineName == 'adobe' ) {
+			if( serverInfo.engineName contains 'adobe' ) {
 				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/cfusion';
 				results.format = 'adobe';
 			} else if ( results.format == 'luceeServer' ) {
