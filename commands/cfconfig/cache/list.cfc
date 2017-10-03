@@ -62,7 +62,13 @@ component {
 					var cacheDetails = CFCaches[ cache ];
 					// The only guaranteed piece of info is name
 					print.boldLine( 'Name: #cache#' );
-					if( !isNull( cacheDetails.class ) ) { print.indentedLine( 'Class: #cacheDetails.class#' ); }
+					
+					if( !isNull( cacheDetails.type ) ) {
+						print.indentedLine( 'Type: #cacheDetails.type#' );
+					} else if( !isNull( cacheDetails.class ) ) {
+						print.indentedLine( 'Class: #cacheDetails.class#' );
+					}
+					
 					if( !isNull( cacheDetails.storage ) ) { print.indentedLine( 'Storage: #yesNoFormat( cacheDetails.storage )#' ); }
 											
 				print.line();
