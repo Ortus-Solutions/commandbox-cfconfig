@@ -52,7 +52,11 @@ component {
 			if( isNull( result ) ) {
 				error( "Configuration for [#property#] doesn't exist in this server" );
 			}
-			print.line( result );
+			if( isSimpleValue( result ) ) {
+				print.line( result );	
+			} else {
+				print.line( formatterUtil.formatJSON( result ) );
+			}
 		// Displaying all properties
 		} else {
 			print.line( oConfig.toString() );
