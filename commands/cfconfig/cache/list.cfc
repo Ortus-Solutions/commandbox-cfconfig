@@ -4,7 +4,7 @@
 * {code}
 * cfconfig cache list
 * cfconfig cache list from=serverName
-* cfconfig cache list from==/path/to/server/home
+* cfconfig cache list from=/path/to/server/home
 * {code}
 * 
 * To receive the data back as JSON, use the --JSON flag.
