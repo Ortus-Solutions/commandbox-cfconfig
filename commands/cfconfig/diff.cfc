@@ -145,13 +145,13 @@ component {
 		var previousPrefix = '~';
 		// propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer
 		for( var row in qryDiff ) {
-			
 			if( row.propertyName.startsWith( previousPrefix )
 				&& ( 
 					row.propertyName.startsWith( 'CFMappings-' ) 
 					|| row.propertyName.startsWith( 'datasources-' ) 
 					|| row.propertyName.startsWith( 'mailServers-' ) 
 					|| row.propertyName.startsWith( 'caches-' )
+					|| row.propertyName.startsWith( 'clientStorageLocations-' )
 					) 
 				) {
 				var nested = true;
