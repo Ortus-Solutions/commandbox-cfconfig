@@ -17,8 +17,8 @@ component {
 		var autoTransferOnUpgrade = configSettings.modules[ 'commandbox-cfconfig' ].autoTransferOnUpgrade ?: true; 
 		
 		// Clean up some slash nonsense
-		interceptData.installDetails.installDir = interceptData.installDetails.installDir.replace( '\', '/', 'all' );
-		interceptData.serverInfo.customServerFolder = interceptData.serverInfo.customServerFolder.replace( '\', '/', 'all' );
+		interceptData.installDetails.installDir = normalizeSlashes( interceptData.installDetails.installDir );
+		interceptData.serverInfo.customServerFolder = normalizeSlashes( interceptData.serverInfo.customServerFolder );
 		
 		// If we found a CFConfig JSON file, let's import it!
 		if( CFConfigFile.len() ) {
@@ -78,7 +78,7 @@ component {
 
 			serverDirectories.each( function( path ){
 				// Curse you Perry the Mixaslashapus
-				path = path.replace( '\', '/', 'all' );
+				path = normalizeSlashes( path );
 				
 				// Ignore ourselves
 				if( path != thisInstallDir ) {
@@ -282,18 +282,7 @@ component {
 		}
 
 		// fall back to file name by convention
-		var conventionLocation = serverInfo.webroot
-			// Normalize slashes
-			.replace( '\', '/', 'all' )
-			// Remove trailing slashes
-			.listChangeDelims( '/', '/' )
-			// Append file name
-			.listAppend( '.cfconfig.json', '/' );
-			
-		// On *nix OSes we need the leading slash back
-		if( serverInfo.webroot.left( 1 ) == '/' ) {
-			conventionLocation = '/' & conventionLocation;
-		}
+		var conventionLocation = normalizeSlashes( serverInfo.webroot ) & '/.cfconfig.json';
 			
 		if( !CFConfigFile.len()
 			&& fileExists( conventionLocation ) ) {
@@ -307,6 +296,17 @@ component {
 			}
 			
 		return CFConfigFile;		
+	}
+	
+	/*
+	* Turns all slashes in a path to forward slashes except for \\ in a Windows UNC network share
+	*/
+	function normalizeSlashes( string path ) {
+		if( path.left( 2 ) == '\\' ) {
+			return '\\' & path.replace( '\', '/', 'all' ).right( -2 );
+		} else {
+			return path.replace( '\', '/', 'all' );			
+		}
 	}
 	
 }
