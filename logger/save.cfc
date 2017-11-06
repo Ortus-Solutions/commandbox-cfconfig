@@ -61,12 +61,10 @@ component {
 		loggerParams.delete( 'to' );
 		loggerParams.delete( 'toFormat' );
 		
-		// Add mapping to config and save.
-		var test = oConfig.addLogger( argumentCollection = loggerParams );
-		print.line(formatterUtil.formatJSON( test.getLoggers() ));
-		print.line(toDetails.path);
-		test.write( toDetails.path );
-				
+		// Add logger to config and save.
+		oConfig.addLogger( argumentCollection = loggerParams )
+			.write( toDetails.path );
+			
 		print.greenLine( 'Logger [#name#] saved.' );	
 	}
 	
