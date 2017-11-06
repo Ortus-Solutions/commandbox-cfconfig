@@ -2,9 +2,7 @@
 * Add a new logger or update an existing logger.  Existing loggers will be matched based on the name.
 * 
 * {code}
-* cfconfig logger save application C:/foo/bar
-* cfconfig logger save virtual=/foo physical=C:/foo/bar to=serverName
-* cfconfig logger save virtual=/foo physical=C:/foo/bar to=/path/to/server/home
+* cfconfig logger save name=application appender=resource appenderArguments:path={lucee-config}/logs/application.log
 * {code}
 *
 */
