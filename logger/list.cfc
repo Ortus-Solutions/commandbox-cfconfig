@@ -22,7 +22,7 @@ component {
 	/**
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @fromFormat The format to read from. Ex: LuceeServer@5
-	* @JSON Set to try to receive caches back as a parsable JSON object
+	* @JSON Set to try to receive loggers back as a parsable JSON object
 	*/
 	function run(
 		string from,
@@ -50,7 +50,7 @@ component {
 		var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version )
 			.read( fromDetails.path );
 
-		// Get the caches, remembering it can be null
+		// Get the loggers, remembering it can be null
 		var loggers = oConfig.getLoggers() ?: {};
 		
 		// If outputting JSON

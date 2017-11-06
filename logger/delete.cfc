@@ -39,11 +39,11 @@ component {
 		var oConfig = CFConfigService.determineProvider( toDetails.format, toDetails.version )
 			.read( toDetails.path );
 
-		// Get the caches and remove the requested one
+		// Get the loggers and remove the requested one
 		var loggers = oConfig.getLoggers() ?: {};
 		loggers.delete( name );	
 		
-		// Set remaining caches back and save
+		// Set remaining loggers back and save
 		oConfig.setLoggers( loggers )
 			.write( toDetails.path );		
 			
