@@ -8,6 +8,7 @@
 *  - Oracle
 *  - Other -- Custom JDBC URL
 *  - MySQL
+*  - H2
 * 
 * {code}
 * cfconfig datasource save myDS
@@ -55,7 +56,8 @@ component {
 	*  - Oracle
 	*  - Other -- Custom JDBC URL
 	*  - MySQL
-	* @dbdriver.options MSSQL,MSSQL2,PostgreSql,Oracle,Other,MySQL
+	*  - H2
+	* @dbdriver.options MSSQL,MSSQL2,PostgreSql,Oracle,Other,MySQL,H2
 	* @dsn JDBC URL (jdbc:mysql://{host}:{port}/{database})
 	* @host name of host
 	* @metaCacheTimeout Not sure-- Lucee had this in the XML
