@@ -152,6 +152,7 @@ component {
 					|| row.propertyName.startsWith( 'mailServers-' ) 
 					|| row.propertyName.startsWith( 'caches-' )
 					|| row.propertyName.startsWith( 'clientStorageLocations-' )
+					|| row.propertyName.startsWith( 'loggers-' )
 					) 
 				) {
 				var nested = true;
