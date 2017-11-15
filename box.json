@@ -21,11 +21,9 @@
         "tests"
     ],
     "dependencies":{
-        "cfconfig-services":"be",
-        "test-repo":"github:zpqrtbnk/test-repo"
+        "cfconfig-services":"be"
     },
     "installPaths":{
-        "cfconfig-services":"modules\\cfconfig-services",
-        "test-repo":"test-repo"
+        "cfconfig-services":"modules\\cfconfig-services"
     }
 }
