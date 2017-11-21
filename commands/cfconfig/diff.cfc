@@ -153,6 +153,7 @@ component {
 					|| row.propertyName.startsWith( 'caches-' )
 					|| row.propertyName.startsWith( 'clientStorageLocations-' )
 					|| row.propertyName.startsWith( 'loggers-' )
+					|| row.propertyName.startsWith( 'restMappings-' )
 					) 
 				) {
 				var nested = true;
