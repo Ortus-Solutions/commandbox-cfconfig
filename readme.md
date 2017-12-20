@@ -30,6 +30,14 @@ Uses for this library include but are not limited to:
 * Merge config from multiple servers together. Ex: combine several Lucee web contexts into a single config (mappings, datasources, etc)
 * Facilitate the external management of any server's settings
 
+## Command Installation
+
+Once you have Commandbox installed run the following command to install the `cfconfig` command:
+
+```
+box install commandbox-cfconfig
+```
+
 ## Usage
 
 Here are some examples of commands you can run.  Use the built-in help to get full details on all commands.
