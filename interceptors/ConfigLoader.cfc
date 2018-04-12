@@ -136,32 +136,46 @@ component {
 						);
 						
 					} else if ( thisEngine == 'lucee' ) {
-											
+						// Guess where the previous server/web context was. This won't be correct if there was a 
+						// webConfigDir or serverConfigDir, but in that case it doesn't matter since there's nothing to copy anyway
+						var previousWebContext = previousServerFolder & '/WEB-INF/lucee-web';
+						var previousServerContext = previousServerFolder & '/WEB-INF/lucee-server';
+						// We know this for sure...
+						var mewWebContext = interceptData.serverInfo.webConfigDir;
+						var mewServerContext = interceptData.serverInfo.serverConfigDir;
 						
-						if( interceptData.serverInfo.debug ) {
-							consoleLogger.debug( 'Copying from [#previousServerFolder#/WEB-INF/lucee-server] to [#thisInstallDir#/WEB-INF/lucee-server]' );
+						if( directoryExists( previousServerContext ) ) {
+							
+							if( interceptData.serverInfo.debug ) {
+								consoleLogger.debug( 'Copying from [#previousServerContext#] to [#mewServerContext#]' );
+							}
+							CFConfigService.transfer(
+								from		= previousServerContext,
+								to			= mewServerContext,
+								fromFormat	= 'luceeServer',
+								toFormat	= 'luceeServer',
+								fromVersion	= previousVersion,
+								toVersion	= thisVersion
+							);
+														
 						}
-						CFConfigService.transfer(
-							from		= previousServerFolder & '/WEB-INF/lucee-server',
-							to			= thisInstallDir & '/WEB-INF/lucee-server',
-							fromFormat	= 'luceeServer',
-							toFormat	= 'luceeServer',
-							fromVersion	= previousVersion,
-							toVersion	= thisVersion
-						);
-											
+
+						if( directoryExists( previousWebContext ) ) {
+								
+							if( interceptData.serverInfo.debug ) {
+								consoleLogger.debug( 'Copying from [#previousWebContext#] to [#mewWebContext#]' );
+							}
+							CFConfigService.transfer(
+								from		= previousWebContext,
+								to			= mewWebContext,
+								fromFormat	= 'luceeWeb',
+								toFormat	= 'luceeWeb',
+								fromVersion	= previousVersion,
+								toVersion	= thisVersion
+							);
+							
+						}
 						
-						if( interceptData.serverInfo.debug ) {
-							consoleLogger.debug( 'Copying from [#previousServerFolder#/WEB-INF/lucee-web] to [#thisInstallDir#/WEB-INF/lucee-web]' );
-						}
-						CFConfigService.transfer(
-							from		= previousServerFolder & '/WEB-INF/lucee-web',
-							to			= thisInstallDir & '/WEB-INF/lucee-web',
-							fromFormat	= 'luceeWeb',
-							toFormat	= 'luceeWeb',
-							fromVersion	= previousVersion,
-							toVersion	= thisVersion
-						);
 					
 					}
 				} catch( any var e ) {
