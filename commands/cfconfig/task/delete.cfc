@@ -1,10 +1,10 @@
 /**
-* Delete a mail server.  Identify the mail server uniquely by the host name.
+* Delete a scheduled task.  Identify the task uniquely by the task name and group.
 * 
 * {code}
-* cfconfig mailserver delete /foo
-* cfconfig mailserver delete /foo serverName
-* cfconfig mailserver delete /foo /path/to/server/home
+* cfconfig task delete myTask myGroup
+* cfconfig task delete myTask myGroup serverName
+* cfconfig task delete myTask myGroup /path/to/server/home
 * {code}
 *
 */
@@ -13,12 +13,14 @@ component {
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
 	/**
-	* @smtp Host address of mail server
+	* @task name of the task
+	* @group group of the task
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @toFormat The format to write to. Ex: LuceeServer@5
 	*/	
 	function run(
-		required string smtp,
+		required string task,
+		string group='default',
 		string to,
 		string toFormat
 	) {		
@@ -39,22 +41,18 @@ component {
 		var oConfig = CFConfigService.determineProvider( toDetails.format, toDetails.version )
 			.read( toDetails.path );
 
-		// Get the mail servers and remove the requested one
-		var mailservers = oConfig.getMailservers() ?: [];
-		var i=0;
-		for( var thisServer in mailservers ) {
-			i++;
-			if( thisServer.smtp == smtp ) {
-				mailservers.deleteAt( i );
-				break;
-			}
-		}
+		// Get the tasks and remove the requested one
+		var tasks = oConfig.getScheduledTasks() ?: {};
+		tasks.delete( group & ':' & task );
+		
+		systemoutput( tasks, 1 );
+		
 		
 		// Set remaining mappings back and save
-		oConfig.setMailservers( mailservers )
+		oConfig.setScheduledTasks( tasks )
 			.write( toDetails.path );		
 			
-		print.greenLine( 'mail server [#smtp#] deleted.' );
+		print.greenLine( 'Scheduled task [#group#:#task#] deleted.' );
 	}
 	
 }
