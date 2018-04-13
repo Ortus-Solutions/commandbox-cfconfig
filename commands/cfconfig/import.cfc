@@ -44,12 +44,14 @@ component {
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @fromFormat The format to read from when "from" is a directory. Ex: LuceeServer@5
 	* @toFormat The format to write to when "to" is a directory. Ex: LuceeServer@5
+	* @pauseTasks It set to true, all scheduled tasks will be saved to the "to" server in a "Paused" state
 	*/	
 	function run(
 		string from,
 		string to,
 		string fromFormat,
 		string toFormat,
+		boolean pauseTasks=false
 		) {
 		command( 'cfconfig transfer' )
 			.params( argumentCollection = arguments )
