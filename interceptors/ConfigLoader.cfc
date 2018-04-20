@@ -6,6 +6,10 @@ component {
 	property name='ConfigService'	inject='ConfigService';
 	property name='semanticVersion'	inject='provider:semanticVersion@semver';
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
+
+	function init() {
+		jobEnabled = wirebox.getBinder().mappingExists( 'interactiveJob' );
+	}
 		
 	function onServerInstall( interceptData ) {
 		var CFConfigFile = findCFConfigFile( interceptData.serverInfo );
@@ -26,7 +30,7 @@ component {
 			if( isJSON( rawJSON ) ) {
 				
 				if( interceptData.serverInfo.debug ) {
-					consoleLogger.info( 'Importing CFConfig into server [#interceptData.serverInfo.name#]' );
+					logDebug( 'Importing CFConfig into server [#interceptData.serverInfo.name#]' );
 				}
 				
 				getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig import' } )
@@ -43,7 +47,7 @@ component {
 				if( interceptData.serverInfo.engineName == 'lucee' && cfconfigJSON.keyExists( 'adminPassword' ) ) {
 					
 					if( interceptData.serverInfo.debug ) {
-						consoleLogger.info( 'Also setting adminPassword to Lucee web context.' );
+						logDebug( 'Also setting adminPassword to Lucee web context.' );
 					}
 					
 					getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig set' } )
@@ -55,7 +59,7 @@ component {
 				}
 						
 			} else {
-				consoleLogger.error( 'CFConfig file doesn''t contain valid JSON! [#CFConfigFile#]' );
+				logError( 'CFConfig file doesn''t contain valid JSON! [#CFConfigFile#]' );
 			}
 		// No JSON file found to import and this is the initial install
 		} else if( interceptData.installDetails.initialInstall
@@ -116,15 +120,15 @@ component {
 
 			// Did we find a previous version of this engine?
 			if( previousServerFolder.len() ) {
-				consoleLogger.warn( 'Auto importing settings from your previous [#thisEngine#@#previousVersion#] server.' );
-				consoleLogger.warn( 'Turn off this feature with [config set modules.commandbox-cfconfig.autoTransferOnUpgrade=false]' );
+				logWarn( 'Auto importing settings from your previous [#thisEngine#@#previousVersion#] server.' );
+				logWarn( 'Turn off this feature with [config set modules.commandbox-cfconfig.autoTransferOnUpgrade=false]' );
 				
 				try {
 					
 					if( thisEngine == 'adobe' ) {
 						
 						if( interceptData.serverInfo.debug ) {
-							consoleLogger.debug( 'Copying from [#previousServerFolder#/WEB-INF/cfusion] to [#thisInstallDir#/WEB-INF/cfusion]' );
+							logDebug( 'Copying from [#previousServerFolder#/WEB-INF/cfusion] to [#thisInstallDir#/WEB-INF/cfusion]' );
 						}
 						CFConfigService.transfer(
 							from		= previousServerFolder & '/WEB-INF/cfusion',
@@ -147,7 +151,7 @@ component {
 						if( directoryExists( previousServerContext ) ) {
 							
 							if( interceptData.serverInfo.debug ) {
-								consoleLogger.debug( 'Copying from [#previousServerContext#] to [#mewServerContext#]' );
+								logDebug( 'Copying from [#previousServerContext#] to [#mewServerContext#]' );
 							}
 							CFConfigService.transfer(
 								from		= previousServerContext,
@@ -163,7 +167,7 @@ component {
 						if( directoryExists( previousWebContext ) ) {
 								
 							if( interceptData.serverInfo.debug ) {
-								consoleLogger.debug( 'Copying from [#previousWebContext#] to [#mewWebContext#]' );
+								logDebug( 'Copying from [#previousWebContext#] to [#mewWebContext#]' );
 							}
 							CFConfigService.transfer(
 								from		= previousWebContext,
@@ -179,10 +183,10 @@ component {
 					
 					}
 				} catch( any var e ) {
-					consoleLogger.error( 'Oh, snap! We had an error auto-importing your settings.  Please report this error.' );
-					consoleLogger.error( e.message );
-					consoleLogger.error( e.detail );
-					consoleLogger.error( '    ' & e.tagContext[ 1 ].template & ':' &  e.tagContext[ 1 ].line );
+					logError( 'Oh, snap! We had an error auto-importing your settings.  Please report this error.' );
+					logError( e.message );
+					logError( e.detail );
+					logError( '    ' & e.tagContext[ 1 ].template & ':' &  e.tagContext[ 1 ].line );
 				}
 			}				
 		}
@@ -198,7 +202,7 @@ component {
 				var name = right( envVar, len( envVar ) - 9 );
 			
 				if( interceptData.serverInfo.debug ) {
-					consoleLogger.info( 'Found environment variable [#envVar#]' );
+					logDebug( 'Found environment variable [#envVar#]' );
 				}				
 				
 				var params = {
@@ -214,7 +218,7 @@ component {
 				if( interceptData.serverInfo.engineName == 'lucee' && name == 'adminPassword' ) {
 					
 					if( interceptData.serverInfo.debug ) {
-						consoleLogger.info( 'Also setting adminPassword to Lucee web context.' );
+						logDebug( 'Also setting adminPassword to Lucee web context.' );
 					}
 					
 					params.toFormat = 'luceeWeb';
@@ -240,7 +244,7 @@ component {
 			if( CFConfigFile.len() ) {
 				
 				if( interceptData.serverInfo.debug ) {
-					consoleLogger.info( 'Exporting CFConfig from server into [#CFConfigFile#]' );
+					logDebug( 'Exporting CFConfig from server into [#CFConfigFile#]' );
 				}
 				
 				getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig export' } )
@@ -264,8 +268,8 @@ component {
 			CFConfigFile = systemSettings.getSystemSetting( 'cfconfigfile' );
 			
 			if( serverInfo.debug ) {
-				consoleLogger.info( 'Found CFConfigFile environment variable.' );
-				consoleLogger.info( 'CFConfig file set to [#CFConfigFile#].' );
+				logDebug( 'Found CFConfigFile environment variable.' );
+				logDebug( 'CFConfig file set to [#CFConfigFile#].' );
 			}
 			
 		}
@@ -290,8 +294,8 @@ component {
 				CFConfigFile = fileSystemUtil.resolvePath( serverJSON.CFConfigFile, getDirectoryFromPath( serverInfo.serverConfigFile ) );
 				
 				if( serverInfo.debug ) {
-					consoleLogger.info( 'Found CFConfig file in [#serverInfo.serverConfigFile#].' );
-					consoleLogger.info( 'CFConfig file set to [#CFConfigFile#].' );
+					logDebug( 'Found CFConfig file in [#serverInfo.serverConfigFile#].' );
+					logDebug( 'CFConfig file set to [#CFConfigFile#].' );
 				}
 		}
 
@@ -302,8 +306,8 @@ component {
 			&& fileExists( conventionLocation ) ) {
 				
 				if( serverInfo.debug ) {
-					consoleLogger.info( 'Found CFConfig file by convention in webroot.' );
-					consoleLogger.info( 'CFConfig file set to [#conventionLocation#].' );
+					logDebug( 'Found CFConfig file by convention in webroot.' );
+					logDebug( 'CFConfig file set to [#conventionLocation#].' );
 				}
 				
 				CFConfigFile = conventionLocation;
@@ -320,6 +324,37 @@ component {
 			return '\\' & path.replace( '\', '/', 'all' ).right( -2 );
 		} else {
 			return path.replace( '\', '/', 'all' );			
+		}
+	}
+	
+	// CommandBox 3/4 shim
+	private function logError( message ) {
+		if( jobEnabled ) {
+			if( message == '.' ) { return; }
+			var job = wirebox.getInstance( 'interactiveJob' );
+			job.addErrorLog( message );
+		} else {
+			consoleLogger.error( message );
+		}
+	}
+	
+	private function logWarn( message ) {
+		if( jobEnabled ) {
+			if( message == '.' ) { return; }
+			var job = wirebox.getInstance( 'interactiveJob' );
+			job.addWarnLog( message );
+		} else {
+			consoleLogger.warn( message );
+		}
+	}
+	
+	private function logDebug( message ) {
+		if( jobEnabled ) {
+			if( message == '.' ) { return; }
+			var job = wirebox.getInstance( 'interactiveJob' );
+			job.addLog( message );
+		} else {
+			consoleLogger.debug( message );
 		}
 	}
 	
