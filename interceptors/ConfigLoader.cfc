@@ -8,7 +8,7 @@ component {
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 
 	function onDIComplete() {
-		jobEnabled = wirebox.getBinder().mappingExists( 'interactiveJob' );
+		jobEnabled = getWirebox().getBinder().mappingExists( 'interactiveJob' );
 	}
 		
 	function onServerInstall( interceptData ) {
