@@ -7,7 +7,7 @@ component {
 	property name='semanticVersion'	inject='provider:semanticVersion@semver';
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 
-	function init() {
+	function onDIComplete() {
 		jobEnabled = wirebox.getBinder().mappingExists( 'interactiveJob' );
 	}
 		
