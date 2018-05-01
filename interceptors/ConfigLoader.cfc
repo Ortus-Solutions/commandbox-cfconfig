@@ -12,7 +12,9 @@ component {
 	}
 		
 	function onServerInstall( interceptData ) {
-		var CFConfigFile = findCFConfigFile( interceptData.serverInfo );
+		var results = findCFConfigFile( interceptData.serverInfo );
+		var CFConfigFile = results.CFConfigFile;
+		var pauseTasks = results.pauseTasks;
 		
 		// Get the config settings
 		var configSettings = ConfigService.getconfigSettings();
@@ -37,7 +39,8 @@ component {
 					.params(
 						from=CFConfigFile,
 						fromFormat='JSON',
-						to=interceptData.serverInfo.name
+						to=interceptData.serverInfo.name,
+						pauseTasks=pauseTasks
 					).run();
 					
 				// Extra check for adminPassword on Lucee.  Set the web context as well
@@ -113,8 +116,8 @@ component {
 								
 							} // Version of interest
 							
-						} // Enging tag has proper contents
-					} // enginet tag exists
+						} // Engine tag has proper contents
+					} // engine tag exists
 				} // ignore ourselves
 			} ); // server dir each
 
@@ -239,7 +242,8 @@ component {
 		// Does the user want us to export setting when the server stops?
 		var exportOnStop = configSettings.modules[ 'commandbox-cfconfig' ].exportOnStop ?: false; 
 		if( exportOnStop ) {
-			var CFConfigFile = findCFConfigFile( interceptData.serverInfo );
+			var results = findCFConfigFile( interceptData.serverInfo );
+			var CFConfigFile = results.CFConfigFile;
 		
 			if( CFConfigFile.len() ) {
 				
@@ -259,24 +263,27 @@ component {
 				
 	}
 	
-	private function findCFConfigFile( serverInfo ) {
-		var CFConfigFile = '';
+	private struct function findCFConfigFile( serverInfo ) {
+		var results = {
+			results.CFConfigFile = '',
+			pauseTasks = false
+		};
 		
 		// An env var of cfconfig wins
-		if( systemSettings.getSystemSetting( 'cfconfigfile', '' ).len() ) {
+		if( systemSettings.getSystemSetting( 'results.cfconfigfile', '' ).len() ) {
 			
-			CFConfigFile = systemSettings.getSystemSetting( 'cfconfigfile' );
+			results.CFConfigFile = systemSettings.getSystemSetting( 'cfconfigfile' );
 			
 			if( serverInfo.debug ) {
 				logDebug( 'Found CFConfigFile environment variable.' );
-				logDebug( 'CFConfig file set to [#CFConfigFile#].' );
+				logDebug( 'CFConfig file set to [#results.CFConfigFile#].' );
 			}
 			
 		}
 		
 		// If there is a server.json file for this server
 		var serverJSON = {};
-		if( !CFConfigFile.len()
+		if( !results.CFConfigFile.len()
 			&& serverInfo.keyExists( 'serverConfigFile' ) 
 			&& serverInfo.serverConfigFile.len()
 			&& fileExists( serverInfo.serverConfigFile ) ) {
@@ -284,18 +291,30 @@ component {
 				serverJSON = serverService.readServerJSON( serverInfo.serverConfigFile );
 				// And swap out any system settings
 				systemSettings.expandDeepSystemSettings( serverJSON );
-			}
+		}
 		
 		// If there is a CFConfig specified, let's use it.
 		if( serverJSON.keyExists( 'CFConfigFile' )
 			&& serverJSON.CFConfigFile.len() ) {
 				
 				// Resolve paths to be relative to the location of the server.json
-				CFConfigFile = fileSystemUtil.resolvePath( serverJSON.CFConfigFile, getDirectoryFromPath( serverInfo.serverConfigFile ) );
+				results.CFConfigFile = fileSystemUtil.resolvePath( serverJSON.CFConfigFile, getDirectoryFromPath( serverInfo.serverConfigFile ) );
 				
 				if( serverInfo.debug ) {
 					logDebug( 'Found CFConfig file in [#serverInfo.serverConfigFile#].' );
-					logDebug( 'CFConfig file set to [#CFConfigFile#].' );
+					logDebug( 'CFConfig file set to [#results.CFConfigFile#].' );
+				}
+		}
+		
+		// Check for flag to keep tasks paused.
+		if( serverJSON.keyExists( 'CFConfigPauseTasks' )
+			&& isBoolean( serverJSON.CFConfigPauseTasks ) ) {
+				
+				// Resolve paths to be relative to the location of the server.json
+				results.pauseTasks = serverJSON.CFConfigPauseTasks;
+				
+				if( serverInfo.debug && results.pauseTasks ) {
+					logDebug( 'CFConfig will import scheduled tasks as paused.' );
 				}
 		}
 
@@ -310,10 +329,10 @@ component {
 					logDebug( 'CFConfig file set to [#conventionLocation#].' );
 				}
 				
-				CFConfigFile = conventionLocation;
+				results.CFConfigFile = conventionLocation;
 			}
 			
-		return CFConfigFile;		
+		return results;		
 	}
 	
 	/*
