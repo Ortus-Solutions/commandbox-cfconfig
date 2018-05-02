@@ -265,7 +265,7 @@ component {
 	
 	private struct function findCFConfigFile( serverInfo ) {
 		var results = {
-			results.CFConfigFile = '',
+			CFConfigFile = '',
 			pauseTasks = false
 		};
 		
