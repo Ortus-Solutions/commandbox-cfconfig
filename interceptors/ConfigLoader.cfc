@@ -321,7 +321,7 @@ component {
 		// fall back to file name by convention
 		var conventionLocation = normalizeSlashes( serverInfo.webroot ) & '/.cfconfig.json';
 			
-		if( !CFConfigFile.len()
+		if( !results.CFConfigFile.len()
 			&& fileExists( conventionLocation ) ) {
 				
 				if( serverInfo.debug ) {
