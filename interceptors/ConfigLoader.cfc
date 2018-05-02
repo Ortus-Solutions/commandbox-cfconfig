@@ -270,7 +270,7 @@ component {
 		};
 		
 		// An env var of cfconfig wins
-		if( systemSettings.getSystemSetting( 'results.cfconfigfile', '' ).len() ) {
+		if( systemSettings.getSystemSetting( 'cfconfigfile', '' ).len() ) {
 			
 			results.CFConfigFile = systemSettings.getSystemSetting( 'cfconfigfile' );
 			
