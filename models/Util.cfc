@@ -38,8 +38,8 @@ component singleton {
 			}
 			
 			// If this is a Lucee server, assume the server context.  It's just way too much of a pain to specify this every single time!
-			if(  serverInfo.enginename == 'lucee' && !results.format.len() ) {
-				results.format = 'luceeServer';				
+			if(  serverInfo.enginename contains 'lucee' && !results.format.len() ) {
+				results.format = 'luceeServer';
 			}
 			
 			if( serverInfo.engineName contains 'adobe' ) {
@@ -51,8 +51,8 @@ component singleton {
 				results.path = serverInfo.webConfigDir;
 			} else {
 				throw( 
-					message="I couldn't find the CF Home for CommandBox server [#serverInfo.name#]. #( !format.len() ? 'Please give me a hint with the format parameter' : '' )#",
-					detail="#( serverInfo.engineName == 'lucee' ? 'This is a Lucee server, so you need to tell me if you want the web or server context. (luceeWeb/luceeServer format)' : '' )#",
+					message="CFConfig couldn't find the CF Home for CommandBox server [#serverInfo.name#]. #( !format.len() ? 'Please give me a hint with the format parameter' : '' )#",
+					detail="#( serverInfo.engineName contains 'lucee' ? 'This is a Lucee server, so you need to tell me if you want the web or server context. (luceeWeb/luceeServer format)' : '' )#",
 					type="cfconfigException"
 				);
 			}
