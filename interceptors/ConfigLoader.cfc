@@ -196,16 +196,14 @@ component {
 
 		// Look for individual CFConfig settings to import.
 		var system = createObject( 'java', 'java.lang.System' );
-		// Get all env vars
-		var envVars = system.getenv();
-		for( var envVar in envVars ) {
+		
+		var processVarsUDF = function( envVar, value, title ) {
 			// Loop over any that look like cfconfig_xxx
 			if( envVar.len() > 9 && left( envVar, 9 ) == 'cfconfig_' ) {
-				var value = envVars[ envVar ];
 				var name = right( envVar, len( envVar ) - 9 );
 			
 				if( interceptData.serverInfo.debug ) {
-					logDebug( 'Found environment variable [#envVar#]' );
+					logDebug( 'Found #title# [#envVar#]' );
 				}				
 				
 				var params = {
@@ -231,6 +229,18 @@ component {
 				}
 				
 			}
+		};
+		
+		// Get all env vars
+		var envVars = system.getenv();
+		for( var envVar in envVars ) {
+			processVarsUDF( envVar, envVars[ envVar ], 'environment variable' );
+		}
+		
+		// Get all System Properties
+		var props = system.getProperties();
+		for( var prop in props ) {
+			processVarsUDF( prop, props[ prop ], 'system property' );
 		}
 	}
 	
