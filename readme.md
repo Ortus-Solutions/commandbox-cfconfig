@@ -13,6 +13,12 @@
 
 This is a CommandBox module that provides a CLI for reading, writing, and storing configuration for all CF engines.
 
+Please enter tickets for bugs or enhancements here:
+https://ortussolutions.atlassian.net/browse/CFCONFIG
+
+Documentation is found here:
+https://cfconfig.ortusbooks.com
+
 ## Main Features
 
 1. Generic JSON storage of any CF engine's settings
