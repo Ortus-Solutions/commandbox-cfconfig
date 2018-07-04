@@ -34,6 +34,8 @@ component {
 	
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
+	property name='PDFReport' inject='PDFReport@commandbox-cfconfig';
+	property name='HTMLReport' inject='HTMLReport@commandbox-cfconfig';
 	
 	/**
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
@@ -49,6 +51,8 @@ component {
 	* @all Display all properties
 	* @verbose Show details for datasources and CF Mappings
 	* @JSON Output raw JSON data of diff data.  The same filters apply.
+	* @HTMLReportPath A folder path or .html file path for an HTML report to be written to.
+	* @PDFReportPath A folder path or .pdf file path for a PDF report to be written to.
 	*/	
 	function run(
 		string from,
@@ -63,7 +67,9 @@ component {
 		boolean valuesDiffer = false,
 		boolean all = false,
 		boolean verbose = false,
-		boolean JSON = false
+		boolean JSON = false,
+		string HTMLReportPath = '',
+		string PDFReportPath = ''
 	) {
 		arguments.from = arguments.from ?: '';
 		arguments.to = arguments.to ?: '';
@@ -117,31 +123,44 @@ component {
 		} catch( cfconfigNoProviderFound var e ) {
 			error( e.message, e.detail ?: '' );
 		}
+			
+		// SQL for main filtering
+		var sql = 'SELECT *
+			FROM qryDiff
+			WHERE 1 = 0 '
+			& ( fromOnly ? ' OR fromOnly = 1 ' : '' )
+			& ( toOnly ? ' OR toOnly = 1 ' : '' )
+			& ( bothPopulated ? ' OR bothPopulated = 1 ' : '' )
+			& ( bothEmpty ? ' OR bothEmpty = 1 ' : '' )
+			& ( valuesMatch ? ' OR valuesMatch = 1 ' : '' )
+			& ( valuesDiffer ? ' OR valuesDiffer = 1 ' : '' )
+			& ( all ? ' OR 1 = 1 ' : '' )
+		var qryDiffFiltered =  queryExecute( sql, [], { dbtype : 'query' } );
+		
+		// If not verbose, filter out nested items
+		if( !verbose ) {
+			var sql2 = "SELECT *
+				FROM qryDiffFiltered
+				WHERE propertyName NOT LIKE '%-%-%' ";
+			qryDiffFiltered =  queryExecute( sql2, [], { dbtype : 'query' } );
+		}
+		
+		
+		if( HTMLReportPath.len() ) {
+			var writtenTo = HTMLReport.generateReport( qryDiffFiltered, fileSystemUtil.resolvepath( HTMLReportPath ), fromDetails, toDetails, arguments );
+			if( !JSON ) {
+				print.greenLine( 'HTML Report written to [#writtenTo#]' );
+			}
+		}
+		if( PDFReportPath.len() ) {
+			var writtenTo = PDFReport.generateReport( qryDiffFiltered, fileSystemUtil.resolvepath( PDFReportPath ), fromDetails, toDetails, arguments );
+			if( !JSON ) {
+				print.greenLine( 'PDF Report written to [#writtenTo#]' );
+			}
+		}
 		
 		if( JSON ) {
-			
-			// SQL for main filtering
-			var sql = 'SELECT *
-				FROM qryDiff
-				WHERE 1=0 '
-				& ( fromOnly ? ' OR fromOnly = 1 ' : '' )
-				& ( toOnly ? ' OR toOnly = 1 ' : '' )
-				& ( bothPopulated ? ' OR bothPopulated = 1 ' : '' )
-				& ( bothEmpty ? ' OR bothEmpty = 1 ' : '' )
-				& ( valuesMatch ? ' OR valuesMatch = 1 ' : '' )
-				& ( valuesDiffer ? ' OR valuesDiffer = 1 ' : '' )
-				& ( all ? ' OR 1 = 1 ' : '' )
-			qryDiff =  queryExecute( sql, [], { dbtype : 'query' } );
-			
-			// If not verbose, filter out nested items
-			if( !verbose ) {
-				var sql2 = "SELECT *
-					FROM qryDiff
-					WHERE propertyName NOT LIKE '%-%-%' ";
-				qryDiff =  queryExecute( sql2, [], { dbtype : 'query' } );
-			}
-			
-			print.line( formatterUtil.formatJSON( serializeJSON( qryDiff, 'struct' ) ) );
+			print.line( formatterUtil.formatJSON( serializeJSON( qryDiffFiltered, 'struct' ) ) );
 			return;
 		}
 		
