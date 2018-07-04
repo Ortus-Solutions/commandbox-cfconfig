@@ -48,6 +48,7 @@ component {
 	* @valuesDiffer Display properties that have differing values
 	* @all Display all properties
 	* @verbose Show details for datasources and CF Mappings
+	* @JSON Output raw JSON data of diff data.  The same filters apply.
 	*/	
 	function run(
 		string from,
@@ -61,7 +62,8 @@ component {
 		boolean valuesMatch = false,
 		boolean valuesDiffer = false,
 		boolean all = false,
-		boolean verbose = false
+		boolean verbose = false,
+		boolean JSON = false
 	) {
 		arguments.from = arguments.from ?: '';
 		arguments.to = arguments.to ?: '';
@@ -114,6 +116,33 @@ component {
 			error( e.message, e.detail ?: '' );
 		} catch( cfconfigNoProviderFound var e ) {
 			error( e.message, e.detail ?: '' );
+		}
+		
+		if( JSON ) {
+			
+			// SQL for main filtering
+			var sql = 'SELECT *
+				FROM qryDiff
+				WHERE 1=0 '
+				& ( fromOnly ? ' OR fromOnly = 1 ' : '' )
+				& ( toOnly ? ' OR toOnly = 1 ' : '' )
+				& ( bothPopulated ? ' OR bothPopulated = 1 ' : '' )
+				& ( bothEmpty ? ' OR bothEmpty = 1 ' : '' )
+				& ( valuesMatch ? ' OR valuesMatch = 1 ' : '' )
+				& ( valuesDiffer ? ' OR valuesDiffer = 1 ' : '' )
+				& ( all ? ' OR 1 = 1 ' : '' )
+			qryDiff =  queryExecute( sql, [], { dbtype : 'query' } );
+			
+			// If not verbose, filter out nested items
+			if( !verbose ) {
+				var sql2 = "SELECT *
+					FROM qryDiff
+					WHERE propertyName NOT LIKE '%-%-%' ";
+				qryDiff =  queryExecute( sql2, [], { dbtype : 'query' } );
+			}
+			
+			print.line( formatterUtil.formatJSON( serializeJSON( qryDiff, 'struct' ) ) );
+			return;
 		}
 		
 		var longestProp = 2 + qryDiff.reduce( function( prev=0, row ) { 
