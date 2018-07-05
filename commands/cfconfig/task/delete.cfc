@@ -45,9 +45,6 @@ component {
 		var tasks = oConfig.getScheduledTasks() ?: {};
 		tasks.delete( group & ':' & task );
 		
-		systemoutput( tasks, 1 );
-		
-		
 		// Set remaining mappings back and save
 		oConfig.setScheduledTasks( tasks )
 			.write( toDetails.path );		

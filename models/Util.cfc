@@ -42,12 +42,19 @@ component singleton {
 				results.format = 'luceeServer';
 			}
 			
+			// If this is a Railo server, assume the server context.  It's just way too much of a pain to specify this every single time!
+			if(  serverInfo.enginename contains 'railo' && !results.format.len() ) {
+				results.format = 'railoServer';
+			}
+			
 			if( serverInfo.engineName contains 'adobe' ) {
 				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/cfusion';
 				results.format = 'adobe';
 			} else if ( results.format == 'luceeServer' ) {
 				results.path = serverInfo.serverConfigDir & '/lucee-server';
-			} else if ( results.format == 'luceeWeb' ) {
+			} else if ( results.format == 'railoServer' ) {
+				results.path = serverInfo.serverConfigDir & '/railo-server';
+			} else if ( results.format == 'railoWeb' || results.format == 'luceeWeb' ) {
 				results.path = serverInfo.webConfigDir;
 			} else {
 				throw( 
