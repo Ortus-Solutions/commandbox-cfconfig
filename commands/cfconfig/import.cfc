@@ -38,10 +38,15 @@
 * 
 */
 component {
+	property name="serverService" inject="ServerService";
 	
 	/**
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
+	* @from.optionsFileComplete true
+	* @from.optionsUDF serverNameComplete
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
+	* @to.optionsFileComplete true
+	* @to.optionsUDF serverNameComplete
 	* @fromFormat The format to read from when "from" is a directory. Ex: LuceeServer@5
 	* @toFormat The format to write to when "to" is a directory. Ex: LuceeServer@5
 	* @pauseTasks It set to true, all scheduled tasks will be saved to the "to" server in a "Paused" state
@@ -56,6 +61,14 @@ component {
 		command( 'cfconfig transfer' )
 			.params( argumentCollection = arguments )
 			.run();
+	}
+	
+	function serverNameComplete() {
+		return serverService
+			.getServerNames()
+			.map( ( i ) => {
+				return { name : i, group : 'Server Names' };
+			} );
 	}
 	
 }

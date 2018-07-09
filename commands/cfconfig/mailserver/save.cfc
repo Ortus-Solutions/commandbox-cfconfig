@@ -12,6 +12,7 @@ component {
 	
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
+	property name="serverService" inject="ServerService";
 	
 	/**
 	* @idleTimout Idle timeout in seconds
@@ -23,6 +24,8 @@ component {
 	* @tls True/False to use TLS for connection
 	* @username Username for mail server
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
+	* @to.optionsFileComplete true
+	* @to.optionsUDF serverNameComplete
 	* @toFormat The format to write to. Ex: LuceeServer@5
 	*/	
 	function run(
@@ -68,6 +71,14 @@ component {
 			.write( toDetails.path );
 				
 		print.greenLine( 'mail server [#smtp#] saved.' );		
+	}
+	
+	function serverNameComplete() {
+		return serverService
+			.getServerNames()
+			.map( ( i ) => {
+				return { name : i, group : 'Server Names' };
+			} );
 	}
 	
 }

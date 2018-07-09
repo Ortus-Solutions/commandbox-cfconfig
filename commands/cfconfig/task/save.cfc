@@ -12,6 +12,7 @@ component {
 	
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
+	property name="serverService" inject="ServerService";
 	
 	/**
 	* @task The name of the task
@@ -47,6 +48,8 @@ component {
 	* @status The current status of the task.  Running, Paused
 	* @username Basic auth username to use when hitting URL
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
+	* @to.optionsFileComplete true
+	* @to.optionsUDF serverNameComplete
 	* @toFormat The format to write to. Ex: LuceeServer@5
 	*/	
 	function run(		
@@ -114,6 +117,14 @@ component {
 			.write( toDetails.path );
 				
 		print.greenLine( 'scheduled task [#task#] saved.' );		
+	}
+	
+	function serverNameComplete() {
+		return serverService
+			.getServerNames()
+			.map( ( i ) => {
+				return { name : i, group : 'Server Names' };
+			} );
 	}
 	
 }

@@ -36,10 +36,15 @@ component {
 	property name='Util' inject='util@commandbox-cfconfig';
 	property name='PDFReport' inject='PDFReport@commandbox-cfconfig';
 	property name='HTMLReport' inject='HTMLReport@commandbox-cfconfig';
+	property name="serverService" inject="ServerService";
 	
 	/**
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
+	* @from.optionsFileComplete true
+	* @from.optionsUDF serverNameComplete
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
+	* @to.optionsFileComplete true
+	* @to.optionsUDF serverNameComplete
 	* @fromFormat The format to read from when "from" is a directory. Ex: LuceeServer@5
 	* @toFormat The format to read from when "to" is a directory. Ex: LuceeServer@5
 	* @fromOnly Display properties only present in the "from" location
@@ -266,6 +271,14 @@ component {
 		} else {
 			return text & repeatString( ' ', columnWidth-len( text ) );			
 		}
+	}
+	
+	function serverNameComplete() {
+		return serverService
+			.getServerNames()
+			.map( ( i ) => {
+				return { name : i, group : 'Server Names' };
+			} );
 	}
 	
 }

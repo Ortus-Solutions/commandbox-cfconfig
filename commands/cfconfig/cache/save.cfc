@@ -27,6 +27,7 @@ component {
 	
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
+	property name="serverService" inject="ServerService";
 	
 	/**
 	* @name The name of the cache to save
@@ -37,6 +38,8 @@ component {
 	* @storage Is this cache used for session or client scope storage?
 	* @custom A collection of custom values for this cache type in the format custom:timeToIdleSeconds=0
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
+	* @to.optionsFileComplete true
+	* @to.optionsUDF serverNameComplete
 	* @toFormat The format to write to. Ex: LuceeServer@5
 	*/	
 	function run(
@@ -85,6 +88,14 @@ component {
 			.write( toDetails.path );
 				
 		print.greenLine( 'Cache [#name#] saved.' );		
+	}
+	
+	function serverNameComplete() {
+		return serverService
+			.getServerNames()
+			.map( ( i ) => {
+				return { name : i, group : 'Server Names' };
+			} );
 	}
 	
 }

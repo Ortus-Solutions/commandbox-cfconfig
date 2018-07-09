@@ -18,9 +18,12 @@ component {
 	
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
+	property name="serverService" inject="ServerService";
 	
 	/**
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
+	* @from.optionsFileComplete true
+	* @from.optionsUDF serverNameComplete
 	* @fromFormat The format to read from. Ex: LuceeServer@5
 	* @JSON Set to try to receive mappings back as a parsable JSON object
 	*/
@@ -78,6 +81,14 @@ component {
 			}
 		}
 			
+	}
+	
+	function serverNameComplete() {
+		return serverService
+			.getServerNames()
+			.map( ( i ) => {
+				return { name : i, group : 'Server Names' };
+			} );
 	}
 	
 }

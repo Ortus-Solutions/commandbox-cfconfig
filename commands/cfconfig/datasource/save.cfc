@@ -21,6 +21,7 @@ component {
 	
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
+	property name="serverService" inject="ServerService";
 	
 	/**
 	* @name Name of datasource
@@ -78,6 +79,8 @@ component {
 	* @clientApplicationNamePrefix Client Information - Application name prefix
 	* @description Description of this datasource.  Informational only.
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
+	* @to.optionsFileComplete true
+	* @to.optionsUDF serverNameComplete
 	* @toFormat The format to write to. Ex: LuceeServer@5
 	*/	
 	function run(
@@ -161,6 +164,14 @@ component {
 			.write( toDetails.path );
 				
 		print.greenLine( 'Datasource [#name#] saved.' );		
+	}
+	
+	function serverNameComplete() {
+		return serverService
+			.getServerNames()
+			.map( ( i ) => {
+				return { name : i, group : 'Server Names' };
+			} );
 	}
 	
 }
