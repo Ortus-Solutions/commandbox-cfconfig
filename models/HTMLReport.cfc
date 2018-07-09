@@ -12,7 +12,7 @@ component singleton {
 		// If we were given a directory
 		if( !( reportPath.right( 5 ) == '.html' || reportPath.right( 4 ) == '.htm' ) ){
 			// Make up a file name
-			reportPath &= '/index.html';
+			reportPath &= '/cfconfig-diff-report-#dateTimeFormat( now(), 'yyyy-mm-dd-HHMMSS' )#.html';
 		}
 		
 		pagePoolClear();

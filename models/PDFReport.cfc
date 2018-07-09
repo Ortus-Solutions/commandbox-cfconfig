@@ -13,14 +13,14 @@ component singleton {
 		// If we were given a directory
 		if( !reportPath.right( 4 ) == '.pdf' ){
 			// Make up a file name
-			reportPath &= '/report.pdf';
+			reportPath &= '/cfconfig-diff-report-#dateTimeFormat( now(), 'yyyy-mm-dd-HHMMSS' )#.pdf';
 		}
 		
 		var html = HTMLReport.generateHTML( argumentCollection=arguments );
 		
 		
 		directoryCreate( getDirectoryFromPath( reportPath ), true, true );
-		document filename=reportPath overwrite=true {
+		cfdocument( filename=reportPath, overwrite=true ) {
 			echo( html );
 		}
 		return reportPath;
