@@ -17,10 +17,9 @@ component singleton {
 		}
 		
 		var html = HTMLReport.generateHTML( argumentCollection=arguments );
-		
-		
+				
 		directoryCreate( getDirectoryFromPath( reportPath ), true, true );
-		cfdocument( filename=reportPath, overwrite=true ) {
+		document filename=reportPath overwrite=true {
 			echo( html );
 		}
 		return reportPath;

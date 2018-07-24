@@ -34,7 +34,6 @@ component {
 	
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
-	property name='PDFReport' inject='PDFReport@commandbox-cfconfig';
 	property name='HTMLReport' inject='HTMLReport@commandbox-cfconfig';
 	property name="serverService" inject="ServerService";
 	
@@ -158,6 +157,14 @@ component {
 			}
 		}
 		if( PDFReportPath.len() ) {
+			
+			if( !getTagList().cf.keyExists( 'document' ) ) {
+				error( "PDF Extension isn't installed.  Cannot create PDF." );
+			}
+			
+			// "Hiding" this CFC from WireBox so Lucee doesn't complain if the PDF extension isn't loaded.			
+			var PDFReport = getInstance( 'commandbox-cfconfig.modelsExt.PDFReport' );
+			
 			var writtenTo = PDFReport.generateReport( qryDiffFiltered, fileSystemUtil.resolvepath( PDFReportPath ), fromDetails, toDetails, arguments );
 			if( !JSON ) {
 				print.greenLine( 'PDF Report written to [#writtenTo#]' );
