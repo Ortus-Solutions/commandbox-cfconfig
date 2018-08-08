@@ -1,5 +1,5 @@
 /**
-* Add a mew mail server or update an existing mail server.  Existing mail servers will be matched based on the host name.
+* Add a new mail server or update an existing mail server.  Existing mail servers will be matched based on the host name.
 * 
 * {code}
 * cfconfig mailserver save smtp.server.com
