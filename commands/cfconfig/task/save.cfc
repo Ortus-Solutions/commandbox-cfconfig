@@ -1,5 +1,5 @@
 /**
-* Add a mew scheduled task or update an existing scheduled task.  Existing scheduled tasks will be matched based on the host name.
+* Add a new scheduled task or update an existing scheduled task.  Existing scheduled tasks will be matched based on the host name.
 * 
 * {code}
 * cfconfig task save myTask http://www.google.com Once 4/13/2018 "5:00 PM"
