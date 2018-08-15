@@ -1,12 +1,118 @@
 <cfoutput>
+	<style>
+	.container {
+		/*text-align: center;*/
+		font-family: Arial, Helvetica, sans-serif;
+		padding: 10px;
+	}
+
+	h1 {
+		font-family: Arial Black, Gadget, sans-serif;
+	}
+
+	h2 {
+		margin-bottom: 5px;
+	}
+	/*
+	table {
+		border-collapse: collapse;
+		margin: auto; 
+	}
+	*/
+	tr {
+		background-color: ##d3d3d3;
+	}
+
+	th {
+		padding-top: 18px;
+    	padding-bottom: 18px;
+		font-family: Arial Black, Gadget, sans-serif;
+		font-size: 18px;
+		color: ##fff;
+		line-height: 1.4;
+		background-color: ##212121;
+		text-align: left;
+	}
+
+	td {
+		padding-top: 16px;
+    	padding-bottom: 16px;
+		font-size: 15px;
+		color: ##212121;
+		line-height: 1.4;
+	}
+
+	tr:first-child th:first-child { border-top-left-radius: 10px; }
+	tr:first-child th:last-child { border-top-right-radius: 10px; }
+	tr:last-child td:first-child { border-bottom-left-radius: 10px; }
+	tr:last-child td:last-child { border-bottom-right-radius: 10px; }
+
+	.column-first {
+		padding-left: 40px;
+		padding-right: 10px;
+	}
+	.column2 {
+		padding: 0 10px;
+	}
+	.column3 {
+		text-align: center;
+		font-size: 30px;
+		padding: 0 25px;
+	}
+	.column-last {
+		padding-left: 10px;
+		padding-right: 40px;
+	}
+	.indent {
+		padding-left: 80px;
+	}
+	/*
+	.filters {
+		width: 120px;
+		text-align: left;
+		margin: auto; 
+	}
+	*/
+	</style>
+<div class="container">
 	<h1>Server Config Diff Report</h1>
-	Created on #datetimeFormat( now() )#<br>
-	<h2>"From" Server: #fromDetails.format# #fromDetails.version# </h2>
-	#fromDetails.path#
-	<h2>"To" Server: #toDetails.format# #toDetails.version# </h2>
-	#toDetails.path#
+	<p>Created on #datetimeFormat( now() )#<p>
+	<table>
+		<thead>
+			<tr>
+				<th class="column-first">"From" Server Config File</th>
+				<th class="column2">Format</th>
+				<th class="column-last">Version</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="column-first">#fromDetails.path#</td>
+				<td class="column2">#fromDetails.format#</td>
+				<td class="column-last">#fromDetails.version#</td>
+			</tr>
+		</tbody>
+	</table>
+	<br>
+	<table>
+		<thead>
+			<tr>
+				<th class="column-first">"To" Server Config File</th>
+				<th class="column2">Format</th>
+				<th class="column-last">Version</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="column-first">#toDetails.path#</td>
+				<td class="column2">#toDetails.format#</td>
+				<td class="column-last">#toDetails.version# </td>
+			</tr>
+		</tbody>
+	</table>
+	
 	<h2>Filters applied</h2>
-	<ul>
+	<ul class="filters">
 		<cfif options.fromOnly><li>From Only</li></cfif>
 		<cfif options.toOnly><li>To Only</li></cfif>
 		<cfif options.bothPopulated><li>Both Populated</li></cfif>
@@ -18,40 +124,48 @@
 	</ul>
 	<br>
 	<br>
-	<table border="1" cellspacing="0" cellpadding="3">
-		<tr>
-			<td><b>Property name</b></td>
-			<td><b>From Value</b></td>
-			<td>&nbsp;</td>
-			<td><b>To Value</b></td>
-		</tr>
-		<cfloop query="qryDiff">
-			<cfscript>
-				if( valuesMatch ) {
-					var equality = '  ==  ';
-					var lineColor = 'green';
-				} else if ( valuesDiffer ) {
-					var lineColor = 'red';
-					var equality = '  &lt;&gt;  ';
-				} else if ( fromOnly ) {
-					var lineColor = 'yellow';
-					var equality = '  &lt;-  ';
-				} else if ( toOnly ) {
-					var lineColor = 'yellow';
-					var equality = '  -&gt;  ';
-				} else {
-					var lineColor = '';
-					var equality = '      ';
-				}
-			</cfscript>
-			
-			<tr bgcolor="#lineColor#">
-				<td>#propertyName#</td>
-				<td>#left( fromValue, 50 )#&nbsp;</td>
-				<td>#equality#&nbsp;</td>
-				<td>#left( toValue, 50 )#&nbsp;</td>
+
+	<table>
+		<thead>
+			<tr>
+				<th class="column-first">Property name</th>
+				<th class="column2">From Value</th>
+				<th class="column3">&nbsp;</th>
+				<th class="column-last">To Value</th>
 			</tr>
-		</cfloop>
+		</thead>
+		<tbody>
+			<cfloop query="qryDiff">
+				<cfscript>
+					if( valuesMatch ) {
+						var lineColor = '##87d870'; // green
+						var equality = '=';			// EQ
+					} else if ( valuesDiffer ) {
+						var lineColor = '##fcb5a1'; // red
+						var equality = '&##8800';   // NEQ
+					} else if ( fromOnly ) {
+						var lineColor = '##f9ed8b'; // yellow
+						var equality = '&##8592';   // left arrow
+					} else if ( toOnly ) {
+						var lineColor = '##f9ed8b'; // yellow
+						var equality = '&##8594';   // right arrow
+					} else {
+						var lineColor = '';
+						var equality = '';
+					}
+				</cfscript>
+				
+				<tr style="background-color: #lineColor#;">
+					<td class="column-first <cfif propertyName.reFindNoCase( '.*-.*-.*' )>indent</cfif>">
+						#propertyName#
+					</td>
+					<td class="column2">#left( fromValue, 50 )#</td>
+					<td class="column3">#equality#</td>
+					<td class="column-last">#left( toValue, 50 )#&nbsp;</td>
+				</tr>
+			</cfloop>
+		</tbody>
 	</table>
+</div>
 	<!---<cfdump var="#qryDiff#">--->
 </cfoutput>
