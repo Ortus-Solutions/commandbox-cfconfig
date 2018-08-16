@@ -215,7 +215,9 @@ component {
 					|| row.propertyName.startsWith( 'clientStorageLocations-' )
 					|| row.propertyName.startsWith( 'loggers-' )
 					|| row.propertyName.startsWith( 'restMappings-' )
-					|| row.propertyName.startsWith( 'scheduledTasks-' )					
+					|| row.propertyName.startsWith( 'scheduledTasks-' )		
+					|| row.propertyName.startsWith( 'eventGatewayConfigurations-' )		
+					|| row.propertyName.startsWith( 'eventGatewayInstances-' )					
 					) 
 				) {
 				var nested = true;
@@ -256,7 +258,7 @@ component {
 				}
 				
 				print.line( 
-					printColumnValue( ( nested ? '  ' : '' ) & row.propertyName & ': ', longestProp )
+					printColumnValue( ( nested ? repeatString( '  ', reReplace( row.propertyName, '[^-]', '', 'all' ).len()-1 ) : '' ) & row.propertyName & ': ', longestProp )
 					& printColumnValue( ( row.toOnly || row.bothEmpty ? '-' : row.FromValue ), fromColumnWidth )
 					& equality
 					& printColumnValue( ( row.fromOnly || row.bothEmpty ? '-' : row.toValue ), toColumnWidth ),
