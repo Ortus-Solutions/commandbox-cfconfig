@@ -80,7 +80,7 @@
 	<table>
 		<thead>
 			<tr>
-				<th class="column-first">"From" Server Config File</th>
+				<th class="column-first">"From" Server Home</th>
 				<th class="column2">Format</th>
 				<th class="column-last">Version</th>
 			</tr>
@@ -97,7 +97,7 @@
 	<table>
 		<thead>
 			<tr>
-				<th class="column-first">"To" Server Config File</th>
+				<th class="column-first">"To" Server Home</th>
 				<th class="column2">Format</th>
 				<th class="column-last">Version</th>
 			</tr>
