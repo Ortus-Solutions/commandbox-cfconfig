@@ -211,7 +211,7 @@ component {
 					|| row.propertyName.startsWith( 'datasources-' ) 
 					|| row.propertyName.startsWith( 'mailServers-' ) 
 					|| row.propertyName.startsWith( 'caches-' ) 
-					|| row.propertyName.startsWith( 'customTags-' )	
+					|| row.propertyName.startsWith( 'customTagPaths-' )	
 					|| row.propertyName.startsWith( 'clientStorageLocations-' )
 					|| row.propertyName.startsWith( 'loggers-' )
 					|| row.propertyName.startsWith( 'restMappings-' )
