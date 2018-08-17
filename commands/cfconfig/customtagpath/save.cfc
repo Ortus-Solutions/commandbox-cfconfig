@@ -15,14 +15,32 @@ component {
 	property name="serverService" inject="ServerService";
 	
 	/**
-	* @physical The physical path that the Custom Tag Path points to
+	* Custom tags have no unique identifier.  In Adobe, there's a made up
+	* "virtual" key of /WEB-INF/customtags(somenumber), but it's never shown
+	* topside.  In Lucee, you *could* name a path, but you don't have to.
+	*
+	* So, internally, we search for combinations of physical and archive paths
+	* to determine uniqueness, specifically:
+	*   "physical:(physical path)_archive:(archivepath)"
+	*
+	* @physical The physical path that the engine should search
+	* @archive Path to the Lucee/Railo archive
+	* @name Name of the Custom Tag Path
+	* @inspectTemplate String containing one of "never", "once", "always", "" (inherit)
+	* @primary Strings containing one of "physical", "archive"
+	* @trusted true/false
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
 	* @toFormat The format to write to. Ex: LuceeServer@5
 	*/	
 	function run(
-		required string physical,
+		string physical="",
+		string archive="",
+		string name,
+		string inspectTemplate,
+		string primary,
+		boolean trusted,
 		string to,
 		string toFormat
 	) {		
@@ -38,6 +56,10 @@ component {
 		if( !toDetails.path.len() ) {
 			error( "The location for the server couldn't be determined.  Please check your spelling." );
 		}
+
+		if( !Len( physical ) && !Len( archive ) ) {
+			error( "You must specify a physical or archive location. (or both)" );
+		}
 				
 		// Read existing config
 		var oConfig = CFConfigService.determineProvider( toDetails.format, toDetails.version );
@@ -48,10 +70,15 @@ component {
 		}
 		
 		// Add path to config and save.
-		oConfig.addCustomTagPath( arguments.physical )
+		var CustomTagPathParams = duplicate( {}.append( arguments ) );
+		CustomTagPathParams.delete( 'to' );
+		CustomTagPathParams.delete( 'toFormat' );
+		
+		// Add mapping to config and save.
+		oConfig.addCustomTagPath( argumentCollection = CustomTagPathParams )
 			.write( toDetails.path );
-				
-		print.greenLine( 'Custom Tag Path [#physical#] saved.' );		
+
+		print.greenLine( 'Custom Tag Path saved.' );		
 	}
 	
 	function serverNameComplete() {
