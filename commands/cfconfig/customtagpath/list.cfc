@@ -54,15 +54,24 @@ component {
 			.read( fromDetails.path );
 
 		// Get the CustomTagPaths, remembering it can be null
-		var CustomTagPaths = oConfig.getCustomTagPaths() ?: [];
+		var CustomTagPaths = oConfig.getCustomTagPaths() ?: {};
 	
 		// If outputting JSON
 		if( arguments.JSON ?: false ) {
 			print.line( formatterUtil.formatJSON( CustomTagPaths ) );
 		} else {
 			if( CustomTagPaths.len() ) {
-				for( var CustomTagPath in CustomTagPaths ) {
-					print.line( "Physical Path: #CustomTagPath#" );
+				for( var i = 1; i <= CustomTagPaths.len(); i++) {
+					var CustomTagPathDetails = CustomTagPaths[ i ];
+					// The only guaranteed piece of info is virtual
+					print.boldLine( 'CFConfig Index: #i#' );
+					if( !isNull( CustomTagPathDetails.name ) ) { print.indentedLine( 'Name: #CustomTagPathDetails.name#' ); }
+					if( !isNull( CustomTagPathDetails.physical ) ) { print.indentedLine( 'Physical Path: #CustomTagPathDetails.physical#' ); }
+					if( !isNull( CustomTagPathDetails.archive ) ) { print.indentedLine( 'Archive Path: #CustomTagPathDetails.archive#' ); }
+					if( !isNull( CustomTagPathDetails.inspectTemplate ) ) { print.indentedLine( 'Inspect Template: #CustomTagPathDetails.inspectTemplate#' ); }
+					if( !isNull( CustomTagPathDetails.primary ) ) { print.indentedLine( 'Primary: #CustomTagPathDetails.primary#' ); }
+					if( !isNull( CustomTagPathDetails.trusted ) ) { print.indentedLine( 'Read Only: #CustomTagPathDetails.trusted#' ); }						
+				print.line();
 				}
 			} else {
 				print.line( 'No Custom Tag Paths defined.' );				
