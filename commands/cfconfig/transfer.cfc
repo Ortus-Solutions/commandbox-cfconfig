@@ -115,7 +115,7 @@ component {
 			error( e.message, e.detail ?: '' );
 		}
 		
-		print.greenLine( 'Config transfered!' );
+		print.greenLine( 'Config transferred!' );
 	}
 	
 	function serverNameComplete() {
