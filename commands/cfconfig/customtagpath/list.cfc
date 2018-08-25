@@ -83,7 +83,7 @@ component {
 	function serverNameComplete() {
 		return serverService
 			.getServerNames()
-			.map( ( i ) => {
+			.map( function( i ) {
 				return { name : i, group : 'Server Names' };
 			} );
 	}
