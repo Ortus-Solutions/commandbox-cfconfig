@@ -216,9 +216,9 @@ component {
 					|| row.propertyName.startsWith( 'loggers-' )
 					|| row.propertyName.startsWith( 'restMappings-' )
 					|| row.propertyName.startsWith( 'scheduledTasks-' )
-					|| row.propertyName.startsWith( 'eventGatewayInstances-' )
 					|| row.propertyName.startsWith( 'eventGatewayConfigurations-' )
-					)
+					|| row.propertyName.startsWith( 'eventGatewayInstances-' )
+					) 
 				) {
 				var nested = true;
 				// If not verbose output, skip nested values
