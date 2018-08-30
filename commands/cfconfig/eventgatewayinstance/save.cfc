@@ -2,8 +2,8 @@
 * Add a new event gateway instance or update an existing event gateway config. Existing event gateway instance will be matched based on gateway Id.
 * 
 * {code}
-* cfconfig eventgatewayinstance save myInstance CFML "/path1/some.cfc,/path2/code.cfc"
-* cfconfig eventgatewayinstance save gatewayId=myInstance type=CFML cfcPaths="/path1/some.cfc,/path2/code.cfc" configurationPath="path3" to=serverName
+* cfconfig eventgatewayinstance save myInstanceId CFML "/path1/some.cfc,/path2/code.cfc"
+* cfconfig eventgatewayinstance save gatewayId=myInstanceId type=CFML cfcPaths="/path1/some.cfc,/path2/code.cfc" configurationPath="path3" to=serverName
 * {code}
 *
 */

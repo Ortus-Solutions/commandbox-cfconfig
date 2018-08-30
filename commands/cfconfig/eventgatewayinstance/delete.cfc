@@ -2,9 +2,9 @@
 * Delete a event gateway instance. Identify the event gateway instance uniquely by the id.
 * 
 * {code}
-* cfconfig eventgatewayinstance delete myType
-* cfconfig eventgatewayinstance delete myType serverName
-* cfconfig eventgatewayinstance delete myType  /path/to/server/home
+* cfconfig eventgatewayinstance delete myInstanceId
+* cfconfig eventgatewayinstance delete myInstanceId serverName
+* cfconfig eventgatewayinstance delete myInstanceId /path/to/server/home
 * {code}
 *
 */
