@@ -358,7 +358,7 @@ component {
 	
 	// CommandBox 3/4 shim
 	private function logError( message ) {
-		if( jobEnabled ) {
+		if( jobEnabled && wirebox.getInstance( 'interactiveJob' ).isActive() ) {
 			if( message == '.' ) { return; }
 			var job = wirebox.getInstance( 'interactiveJob' );
 			job.addErrorLog( message );
@@ -368,7 +368,7 @@ component {
 	}
 	
 	private function logWarn( message ) {
-		if( jobEnabled ) {
+		if( jobEnabled && wirebox.getInstance( 'interactiveJob' ).isActive() ) {
 			if( message == '.' ) { return; }
 			var job = wirebox.getInstance( 'interactiveJob' );
 			job.addWarnLog( message );
@@ -378,7 +378,7 @@ component {
 	}
 	
 	private function logDebug( message ) {
-		if( jobEnabled ) {
+		if( jobEnabled && wirebox.getInstance( 'interactiveJob' ).isActive() ) {
 			if( message == '.' ) { return; }
 			var job = wirebox.getInstance( 'interactiveJob' );
 			job.addLog( message );
