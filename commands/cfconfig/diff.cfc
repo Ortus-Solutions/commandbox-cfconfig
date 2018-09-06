@@ -211,13 +211,13 @@ component {
 					|| row.propertyName.startsWith( 'datasources-' ) 
 					|| row.propertyName.startsWith( 'mailServers-' ) 
 					|| row.propertyName.startsWith( 'caches-' ) 
-					|| row.propertyName.startsWith( 'customTagPaths-' )	
+					|| row.propertyName.startsWith( 'customTagPaths-' )
 					|| row.propertyName.startsWith( 'clientStorageLocations-' )
 					|| row.propertyName.startsWith( 'loggers-' )
 					|| row.propertyName.startsWith( 'restMappings-' )
-					|| row.propertyName.startsWith( 'scheduledTasks-' )		
-					|| row.propertyName.startsWith( 'eventGatewayConfigurations-' )		
-					|| row.propertyName.startsWith( 'eventGatewayInstances-' )					
+					|| row.propertyName.startsWith( 'scheduledTasks-' )
+					|| row.propertyName.startsWith( 'eventGatewayConfigurations-' )
+					|| row.propertyName.startsWith( 'eventGatewayInstances-' )
 					) 
 				) {
 				var nested = true;

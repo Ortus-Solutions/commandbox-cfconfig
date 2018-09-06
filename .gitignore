@@ -66,3 +66,4 @@ $RECYCLE.BIN/
 settings.xml
 *.project
 .settings/
+.idea
