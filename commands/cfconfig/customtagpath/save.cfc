@@ -27,7 +27,9 @@ component {
 	* @archive Path to the Lucee/Railo archive
 	* @name Name of the Custom Tag Path
 	* @inspectTemplate String containing one of "never", "once", "always", "" (inherit)
+	* @inspectTemplate.options never,once,always
 	* @primary Strings containing one of "physical", "archive"
+	* @primary.options physical,archive
 	* @trusted true/false
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
