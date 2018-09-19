@@ -26,15 +26,16 @@ https://cfconfig.ortusbooks.com
 
 This does not use RDS and doesn't need the server to be running.  It just needs access to the installation folder for a server to locate its config files.  You will need to restart the server for the change to take effect unless you have configured the server to scan it's config files for changes. 
 
-## Possible Uses
+## Uses
 
-Uses for this library include but are not limited to:
+This library is a CommandBox module that provides a CLI interface sitting on top of the `cfconfig-services` project.  You must use CommandBox to use this project, but the servers themselves don't need to have been started by CommandBox.  You can manage the configuration of any server using this.  Uses for this library include but are not limited to:
 
 * Export config from a server as a backup
 * Import config to a server to speed/automate setup
 * Copy config from one server to another.  Servers could be different engines-- i.e. copy config from Adobe CF11 to Lucee 5.
 * Merge config from multiple servers together. Ex: combine several Lucee web contexts into a single config (mappings, datasources, etc)
 * Facilitate the external management of any server's settings
+* Compare settings between two sources
 
 ## Command Installation
 
@@ -43,6 +44,13 @@ Once you have Commandbox installed run the following command to install the `cfc
 ```
 box install commandbox-cfconfig
 ```
+
+You can check to ensure you have the latest version of CFConfig like so:
+
+```
+box update --system
+```
+
 
 ## Usage
 
@@ -61,14 +69,14 @@ When interacting with CommandBox servers, we try really hard to figure out the t
 
 ### Export config from a server
 
-```
+```bash
 cfconfig export myConfig.json
 cfconfig export myConfig.json serverName
 cfconfig export myConfig.json /path/to/server/install/home luceeWeb@4.5
 ```
 
 ### Import config to a server
-```
+```bash
 cfconfig import myConfig.json
 cfconfig import myConfig.json serverName
 cfconfig import myConfig.json /path/to/server/install/home luceeWeb@4.5
@@ -76,20 +84,20 @@ cfconfig import myConfig.json /path/to/server/install/home luceeWeb@4.5
 
 ### Transfer config between two servers
 Note the two servers do not need to be the same kind.  CFConfig will translate the config for you.
-```
+```bash
 cfconfig transfer server1 server2
 cfconfig transfer from=/path/to/server1/install/home to=/path/to/server2/install/home fromFormat=adobe@11 toFormat=luceeServer@5
 ```
 
 ### View all configuration
-```
+```bash
 cfconfig show
 cfconfig show serverName
 cfconfig show /path/to/server/install/home
 ```
 
 ### View a specific configuration setting
-```
+```bash
 cfconfig show requestTimeout
 cfconfig show requestTimeout serverName
 cfconfig show requestTimeout /path/to/server/install/home adobe@11
@@ -97,7 +105,7 @@ cfconfig show requestTimeout /path/to/server/install/home adobe@11
 
 ### Diff settings between two servers.
 You can diff any two locations, meaning two servers, two JSON files, a server and a JSON file, etc, etc.
-```
+```bash
 cfconfig diff server1 server2
 cfconfig diff file1.json file2.json
 cfconfig diff servername file.json
@@ -105,7 +113,7 @@ cfconfig diff from=path/to/servers1/home to=path/to/server2/home
 ```
 
 You can even filter what config settings you see:
-```
+```bash
 cfconfig diff to=serverName --all
 cfconfig diff to=serverName --valuesDiffer --toOnly --fromOnly
 ```
@@ -113,14 +121,14 @@ cfconfig diff to=serverName --valuesDiffer --toOnly --fromOnly
 ### Set a configuration setting
 Note, this command requires named parameters.
 
-```
+```bash
 cfconfig set adminPassword=commandbox
 cfconfig set adminPassword=commandbox to=serverName
 cfconfig set adminPassword=commandbox to=/path/to/server/install/home toFormat=adobe@11
 ```
 
 You can actually use `cfconfig set` to manage the static contents of a JSON export. The JSON file is, after all, just another location you can read from or write to.
-```
+```bash
 # Pull current config from server into JSON file
 cfconfig export myConfig.json
 # Edit JSON file directly
@@ -129,7 +137,7 @@ cfconfig set adminPassword=commandbox to=myConfig.json
 
 ### Manage CF Mappings
 There are three commands to manage CF mappings.
-```
+```bash
 cfconfig cfmapping list
 cfconfig cfmapping save /foo C:/foo
 cfconfig cfmapping delete /foo
@@ -137,7 +145,7 @@ cfconfig cfmapping delete /foo
 
 ### Manage Datasources
 There are three commands to manage datasources.
-```
+```bash
 cfconfig datasource list
 cfconfig datasource save myDS
 cfconfig datasource delete myDS
@@ -145,7 +153,7 @@ cfconfig datasource delete myDS
 
 ### Manage Mail Servers
 There are three commands to manage Mail Servers.
-```
+```bash
 cfconfig mailserver list
 cfconfig mailserver save smtp.mail.com
 cfconfig mailserver delete smtp.mail.com
@@ -153,19 +161,56 @@ cfconfig mailserver delete smtp.mail.com
 
 ### Manage Lucee Caches
 There are three commands to manage Lucee caches.
-```
+```bash
 cfconfig cache list
 cfconfig cache save myCache
 cfconfig cache delete myCache
 ```
 
-## Future Development
+### Manage Custom Tag Paths
+There are three commands to manage Custom Tag Paths.
+```bash
+cfconfig customtagpath list
+cfconfig customtagpath save /foo C:/foo/bar
+cfconfig customtagpath delete /foo
+```
 
-This is very much a work in progess.  Features yet to come include:
+### Manage Event Gateway Configurations
+There are three commands to manage Event Gateway onfig.
+```bash
+cfconfig eventgatewayconfig list
+cfconfig eventgatewayconfig save myType "description of gateway" "java.class" 30 true
+cfconfig eventgatewayconfig delete myType
+```
 
-* Listen to CommandBox server installs, and auto-migrate settings when a new engine is installed.
-* More complete support for all engines. (looking for community contributions for this since there's so much to support).
-* If you think of something else, please submit a ticket!
+### Manage Event Gatway Instances
+There are three commands to manage Event Gatway Instances.
+```bash
+cfconfig eventgatewayinstance list
+cfconfig eventgatewayinstance save myInstanceId CFML "/path1/some.cfc,/path2/code.cfc"
+cfconfig eventgatewayinstance delete myInstanceId
+```
+
+### Manage Lucee Loggers
+There are three commands to manage Lucee Loggers.
+```bash
+cfconfig logger list
+cfconfig logger save name=application appender=resource appenderArguments:path={lucee-config}/logs/application.log
+cfconfig logger delete application
+```
+
+### Manage Scheduled Tasks
+There are three commands to manage Scheduled Tasks.
+```bash
+cfconfig task list
+cfconfig task save myTask http://www.google.com Once 4/13/2018 "5:00 PM"
+cfconfig task delete myTask myGroup
+```
+
+
+## Notes
+
+If you notice a missing feature, please send a pull request or enter a ticket so we can track it.
 
 And remember, this project is just the CLI component. If you'd like to build a custom process of managing your server's config, the entire service layer is available as a separate project, which can operate outside of CommandBox. https://www.forgebox.io/view/cfconfig-services
 
