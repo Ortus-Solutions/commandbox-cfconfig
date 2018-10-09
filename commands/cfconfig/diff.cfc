@@ -36,6 +36,7 @@ component {
 	property name='Util' inject='util@commandbox-cfconfig';
 	property name='HTMLReport' inject='HTMLReport@commandbox-cfconfig';
 	property name="serverService" inject="ServerService";
+	property name="ConfigService" inject="ConfigService";
 	
 	/**
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
@@ -172,7 +173,14 @@ component {
 		}
 		
 		if( JSON ) {
-			print.line( formatterUtil.formatJSON( serializeJSON( qryDiffFiltered, 'struct' ) ) );
+					
+			// Detect if this installed version of CommandBox can handle automatic JSON formatting (and coloring)
+			if( configService.getPossibleConfigSettings().findNoCase( 'JSON.ANSIColors.constant' ) ) {
+				print.line( deserializeJSON( serializeJSON( qryDiffFiltered, 'struct' ) ) );
+			} else {
+				print.line( formatterUtil.formatJSON( serializeJSON( qryDiffFiltered, 'struct' ) ) );	
+			}
+			
 			return;
 		}
 		

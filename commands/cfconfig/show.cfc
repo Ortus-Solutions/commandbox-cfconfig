@@ -6,6 +6,7 @@ component {
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
 	property name="serverService" inject="ServerService";
+	property name="ConfigService" inject="ConfigService";
 	
 	/**
 	* @property name of the property to view.  Empty for everything.
@@ -55,15 +56,22 @@ component {
 			if( isNull( result ) ) {
 				error( "Configuration for [#property#] doesn't exist in this server" );
 			}
-			if( isSimpleValue( result ) ) {
-				print.line( result );	
-			} else {
-				print.line( formatterUtil.formatJSON( result ) );
-			}
 		// Displaying all properties
 		} else {
-			print.line( oConfig.toString() );
+			var result = oConfig.getMemento();
 		}
+				
+		// Detect if this installed version of CommandBox can handle automatic JSON formatting (and coloring)
+		if( configService.getPossibleConfigSettings().findNoCase( 'JSON.ANSIColors.constant' ) ) {
+			print.line( result );
+		} else {
+			if( isSimpleValue( result ) ) {
+				print.line( result );
+			} else {
+				print.line( formatterUtil.formatJSON( result ) );
+			}	
+		}
+		
 	}
 
 	function propertyComplete() {
