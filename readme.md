@@ -92,8 +92,8 @@ cfconfig transfer from=/path/to/server1/install/home to=/path/to/server2/install
 ### View all configuration
 ```bash
 cfconfig show
-cfconfig show serverName
-cfconfig show /path/to/server/install/home
+cfconfig show from=serverName
+cfconfig show from="/path/to/server/install/home"
 ```
 
 ### View a specific configuration setting
