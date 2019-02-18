@@ -79,7 +79,7 @@ cfconfig export myConfig.json /path/to/server/install/home luceeWeb@4.5
 ```bash
 cfconfig import myConfig.json
 cfconfig import myConfig.json serverName
-cfconfig import myConfig.json /path/to/server/install/home luceeWeb@4.5
+cfconfig import from=myConfig.json to=/path/to/server/install/home toFormat=luceeWeb@4.5
 ```
 
 ### Transfer config between two servers
