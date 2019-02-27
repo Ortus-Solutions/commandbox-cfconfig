@@ -26,7 +26,7 @@ component {
 		arguments.fromFormat = arguments.fromFormat ?: '';
 		
 		try {
-			var fromDetails = Util.resolveServerDetails( from, fromFormat );
+			var fromDetails = Util.resolveServerDetails( from, fromFormat, 'from' );
 		} catch( cfconfigException var e ) {
 			error( e.message, e.detail ?: '' );
 		}

@@ -50,7 +50,7 @@ component {
 		var toFormat = arguments.toFormat ?: '';
 
 		try {
-			var toDetails = Util.resolveServerDetails( to, toFormat );
+			var toDetails = Util.resolveServerDetails( to, toFormat, 'to' );
 		} catch( cfconfigException var e ) {
 			error( e.message, e.detail ?: '' );
 		}

@@ -13,7 +13,12 @@ component singleton {
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	
 	
-	function resolveServerDetails( string from, string format ) {
+	/**
+	* @from The to or from value specified to the command
+	* @format The given format of the to or from value
+	* @fromToName The desinator "to" or "from" to know what we're looking up for better error messages
+	*/
+	function resolveServerDetails( string from, string format, string fromToName='' ) {
 		var results = {
 			format : '',
 			version : '',
@@ -58,14 +63,14 @@ component singleton {
 				results.path = serverInfo.webConfigDir;
 			} else {
 				throw( 
-					message="CFConfig couldn't find the CF Home for CommandBox server [#serverInfo.name#]. #( !format.len() ? 'Please give me a hint with the format parameter' : '' )#",
+					message="CFConfig couldn't find the CF Home for [#fromToName#] CommandBox server [#serverInfo.name#]. #( !format.len() ? 'Please give me a hint with the format parameter' : '' )#",
 					detail="#( serverInfo.engineName contains 'lucee' ? 'This is a Lucee server, so you need to tell me if you want the web or server context. (luceeWeb/luceeServer format)' : '' )#",
 					type="cfconfigException"
 				);
 			}
 						
 			if( !results.path.len() ) {
-				throw( message="The server home for the CommandBox server [#from#] wasn't found. Try starting the server to make sure it hasn't been deleted from disk.", type="cfconfigException" );	
+				throw( message="The server home for the [#fromToName#] CommandBox server [#from#] wasn't found. Try starting the server to make sure it hasn't been deleted from disk.", type="cfconfigException" );	
 			}
 			
 			// Lucee can have a relative web or server context path.  It's relative to the server home directory
@@ -96,7 +101,7 @@ component singleton {
 			results.path = arguments.from;
 			
 			if( !results.format.len() ) {
-				throw( message="You gave the location of the server, but we couldn't figure out the format to use.  Please give us some more info.", type="cfconfigException" );
+				throw( message="You gave the location of the [#fromToName#] server, but we couldn't figure out the format to use.", detail="Please help us by adding [#fromToName#Format=...] to your command.", type="cfconfigException" );
 			}
 			
 		} else {
@@ -111,7 +116,7 @@ component singleton {
 				};
 			}
 			
-			throw( message="We couldn't find your server.  You didn't give us a path and this directory isn't a CommandBox server.", type="cfconfigException" );			
+			throw( message="We couldn't find your [#fromToName#] server.  You didn't give us a path and this directory isn't a CommandBox server.", detail="Please help us by adding [#fromToName#=...] to your command.", type="cfconfigException" );			
 		}
 		
 		return results;	

@@ -84,8 +84,8 @@ component {
 		}
 				
 		try {
-			var fromDetails = Util.resolveServerDetails( from, fromFormat );
-			var toDetails = Util.resolveServerDetails( to, toFormat );
+			var fromDetails = Util.resolveServerDetails( from, fromFormat, 'from' );
+			var toDetails = Util.resolveServerDetails( to, toFormat, 'to' );
 			
 			if( !fromDetails.path.len() ) {
 				error( "The location for the 'from' server couldn't be determined.  Please check your spelling." );
