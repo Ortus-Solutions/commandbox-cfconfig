@@ -63,7 +63,7 @@ component {
 		string from,
 		string to,
 		string fromFormat,
-		string toFomat,
+		string toFormat,
 		boolean fromOnly = false,
 		boolean toOnly = false,
 		boolean bothPopulated = false,
