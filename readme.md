@@ -72,7 +72,7 @@ When interacting with CommandBox servers, we try really hard to figure out the t
 ```bash
 cfconfig export myConfig.json
 cfconfig export myConfig.json serverName
-cfconfig export myConfig.json /path/to/server/install/home luceeWeb@4.5
+cfconfig export myConfig.json /path/to/server/install/home
 ```
 
 ### Import config to a server
