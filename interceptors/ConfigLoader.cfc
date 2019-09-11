@@ -231,10 +231,10 @@ component {
 			}
 		};
 		
-		// Get all env vars
+		// Get all OS env vars
 		var envVars = system.getenv();
 		for( var envVar in envVars ) {
-			processVarsUDF( envVar, envVars[ envVar ], 'environment variable' );
+			processVarsUDF( envVar, envVars[ envVar ], 'OS environment variable' );
 		}
 		
 		// Get all System Properties
@@ -242,6 +242,16 @@ component {
 		for( var prop in props ) {
 			processVarsUDF( prop, props[ prop ], 'system property' );
 		}
+		
+		// Ignore this on older versions of CommandBox
+		if( structKeyExists( systemSettings, 'getAllEnvironmentsFlattened' ) ) {
+			// Get all box environemnt variable
+			var envVars = systemSettings.getAllEnvironmentsFlattened();
+			for( var envVar in envVars ) {
+				processVarsUDF( envVar, envVars[ envVar ], 'box environment variable' );
+			}	
+		}
+		
 	}
 	
 	function onServerStop( interceptData ) {
