@@ -72,9 +72,8 @@ component {
 				var i=0;
 				for( var mailserver in mailservers ) {
 					i++;
-					// The only guaranteed piece of info is virtual
 					print.boldLine( 'Mail Server #i#' );
-					print.boldLine( 'Host: #mailserver.smtp#' );
+					print.boldLine( 'Host: #mailserver.smtp ?: '<No host defined>'#' );
 					if( !isNull( mailserver.port ) ) { print.indentedLine( 'Port: #mailserver.port#' ); }
 					if( !isNull( mailserver.username ) ) { print.indentedLine( 'Username: #mailserver.username#' ); }
 					if( !isNull( mailserver.password ) ) { print.indentedLine( 'Password: #mailserver.password#' ); }

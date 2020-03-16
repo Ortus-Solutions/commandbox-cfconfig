@@ -70,7 +70,7 @@ component {
 		oConfig.addMailserver( argumentCollection = mailserverParams )
 			.write( toDetails.path );
 				
-		print.greenLine( 'mail server [#smtp#] saved.' );		
+		print.greenLine( 'mail server [#smtp ?: ''#] saved.' );		
 	}
 	
 	function serverNameComplete() {
