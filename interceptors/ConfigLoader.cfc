@@ -12,6 +12,12 @@ component {
 	}
 		
 	function onServerInstall( interceptData ) {
+		var en = interceptData.installDetails.engineName;
+		// Bail right now if this server isn't a CF engine.
+		if( !( en contains 'lucee' || en contains 'railo' || en contains 'adobe' ) ) {
+			return;
+		}
+		
 		var results = findCFConfigFile( interceptData.serverInfo );
 		var CFConfigFile = results.CFConfigFile;
 		var pauseTasks = results.pauseTasks;
@@ -255,6 +261,12 @@ component {
 	}
 	
 	function onServerStop( interceptData ) {
+
+		var en = interceptData.serverInfo.engineName;
+		// Bail right now if this server isn't a CF engine.
+		if( !( en contains 'lucee' || en contains 'railo' || en contains 'adobe' ) ) {
+			return;
+		}
 
 		// Get the config settings
 		var configSettings = ConfigService.getconfigSettings();
