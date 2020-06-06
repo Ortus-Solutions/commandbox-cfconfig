@@ -80,6 +80,7 @@ component {
 	* @clientApplicationNamePrefix Client Information - Application name prefix
 	* @description Description of this datasource.  Informational only.
 	* @requestExclusive Exclusive connections for request
+	* @alwaysSetTimeout Always set timeout on queries
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
@@ -134,6 +135,7 @@ component {
 		boolean allowAlter,
 		boolean allowStoredProcs,
 		boolean requestExclusive,
+		boolean alwaysSetTimeout,
 		string to,
 		string toFormat
 	) {		
