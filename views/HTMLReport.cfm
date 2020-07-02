@@ -80,14 +80,14 @@
 	<table>
 		<thead>
 			<tr>
-				<th class="column-first">"From" Server Home</th>
+				<th class="column-first">#(isNull(options.fromDisplayName)?'"From" ':'')#Server</th>
 				<th class="column2">Format</th>
 				<th class="column-last">Version</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="column-first">#fromDetails.path#</td>
+				<td class="column-first">#options.fromDisplayName ?: fromDetails.path#</td>
 				<td class="column2">#fromDetails.format#</td>
 				<td class="column-last">#fromDetails.version#</td>
 			</tr>
@@ -97,14 +97,14 @@
 	<table>
 		<thead>
 			<tr>
-				<th class="column-first">"To" Server Home</th>
+				<th class="column-first">#(isNull(options.toDisplayName)?'"To" ':'')# Server</th>
 				<th class="column2">Format</th>
 				<th class="column-last">Version</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="column-first">#toDetails.path#</td>
+				<td class="column-first">#options.toDisplayName ?: toDetails.path#</td>
 				<td class="column2">#toDetails.format#</td>
 				<td class="column-last">#toDetails.version# </td>
 			</tr>
@@ -113,8 +113,8 @@
 	
 	<h2>Filters applied</h2>
 	<ul class="filters">
-		<cfif options.fromOnly><li>From Only</li></cfif>
-		<cfif options.toOnly><li>To Only</li></cfif>
+		<cfif options.fromOnly><li>#options.fromDisplayName ?: 'From'# Only</li></cfif>
+		<cfif options.toOnly><li>#options.toDisplayName ?: 'To'# Only</li></cfif>
 		<cfif options.bothPopulated><li>Both Populated</li></cfif>
 		<cfif options.bothEmpty><li>Both Empty</li></cfif>
 		<cfif options.valuesMatch><li>Values Match</li></cfif>
@@ -129,9 +129,9 @@
 		<thead>
 			<tr>
 				<th class="column-first">Property name</th>
-				<th class="column2">From Value</th>
+				<th class="column2">#options.fromDisplayName ?: 'From'# Value</th>
 				<th class="column3">&nbsp;</th>
-				<th class="column-last">To Value</th>
+				<th class="column-last">#options.toDisplayName ?: 'To'# Value</th>
 			</tr>
 		</thead>
 		<tbody>

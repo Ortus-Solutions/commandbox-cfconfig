@@ -58,6 +58,8 @@ component {
 	* @JSON Output raw JSON data of diff data.  The same filters apply.
 	* @HTMLReportPath A folder path or .html file path for an HTML report to be written to.
 	* @PDFReportPath A folder path or .pdf file path for a PDF report to be written to.
+	* @toDisplayName The "to" server's display name to use on reports.
+	* @fromDisplayName The "from" server's display name to use on reports.
 	*/	
 	function run(
 		string from,
@@ -74,7 +76,9 @@ component {
 		boolean verbose = false,
 		boolean JSON = false,
 		string HTMLReportPath = '',
-		string PDFReportPath = ''
+		string PDFReportPath = '',
+		string toDisplayName,
+		string fromDisplayName
 	) {
 		arguments.from = arguments.from ?: '';
 		arguments.to = arguments.to ?: '';
@@ -206,9 +210,9 @@ component {
 			.line()
 			.boldUnderscoredLine( 
 				printColumnValue( 'Property Name', longestProp ) 
-				& printColumnValue( '"From" Server ', fromColumnWidth )
+				& printColumnValue( FromDisplayName ?: '"From" Server ', fromColumnWidth )
 				& '      '
-				& printColumnValue( '"To" Server', toColumnWidth ) );
+				& printColumnValue( toDisplayName  ?: '"To" Server', toColumnWidth ) );
 	
 		var previousPrefix = '~';
 		// propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer
