@@ -51,7 +51,7 @@ component singleton {
 			if(  serverInfo.enginename contains 'railo' && !results.format.len() ) {
 				results.format = 'railoServer';
 			}
-			
+					
 			if( serverInfo.engineName contains 'adobe' ) {
 				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/cfusion';
 				results.format = 'adobe';
@@ -61,21 +61,26 @@ component singleton {
 				results.path = serverInfo.serverConfigDir & '/railo-server';
 			} else if ( results.format == 'railoWeb' || results.format == 'luceeWeb' ) {
 				results.path = serverInfo.webConfigDir;
-			} else {
-				throw( 
-					message="CFConfig couldn't find the CF Home for [#fromToName#] CommandBox server [#serverInfo.name#]. #( !format.len() ? 'Please give me a hint with the format parameter' : '' )#",
-					detail="#( serverInfo.engineName contains 'lucee' ? 'This is a Lucee server, so you need to tell me if you want the web or server context. (luceeWeb/luceeServer format)' : '' )#",
-					type="cfconfigException"
-				);
-			}
-						
-			if( !results.path.len() ) {
-				throw( message="The server home for the [#fromToName#] CommandBox server [#from#] wasn't found. Try starting the server to make sure it hasn't been deleted from disk.", type="cfconfigException" );	
-			}
+			}			
 			
 			// Lucee can have a relative web or server context path.  It's relative to the server home directory
 			if( results.path.listFirst( '/\' ) == 'WEB-INF' ) {
 				results.path = serverInfo.serverHomeDirectory & results.path;	
+			}
+			
+			if( !results.path.len() ) {
+				throw( 
+					message="CFConfig couldn't find the CF Home for [#fromToName#] CommandBox server [#serverInfo.name#]. #( !format.len() ? 'Please give me a hint with the format parameter' : '' )#",
+					detail="#( serverInfo.engineName contains 'lucee' ? 'This is a Lucee server, so you need to tell me if you want the web or server context. (luceeWeb/luceeServer format)' : '' )#",
+					type="cfconfigException"
+				);	
+			}
+			// A custom engine won't have an engineVersion in serverInfo
+			if( !results.version.len() ) {
+				var guessedFormat = CFConfigService.guessFormat( results.path );
+				if( results.version != '0' ) {
+					results.version = guessedFormat.version;	
+				}
 			}
 			
 		// not a CommandBox server, so assume to be a directory
