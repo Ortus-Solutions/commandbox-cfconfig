@@ -37,7 +37,7 @@ component {
 			var rawJSON = fileRead( CFConfigFile );
 			if( isJSON( rawJSON ) ) {
 				
-				if( interceptData.serverInfo.debug ) {
+				if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
 					logDebug( 'Importing CFConfig into server [#interceptData.serverInfo.name#]' );
 				}
 				
@@ -55,7 +55,7 @@ component {
 				systemSettings.expandDeepSystemSettings( cfconfigJSON );
 				if( interceptData.serverInfo.engineName == 'lucee' && cfconfigJSON.keyExists( 'adminPassword' ) ) {
 					
-					if( interceptData.serverInfo.debug ) {
+					if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
 						logDebug( 'Also setting adminPassword to Lucee web context.' );
 					}
 					
@@ -136,7 +136,7 @@ component {
 					
 					if( thisEngine == 'adobe' ) {
 						
-						if( interceptData.serverInfo.debug ) {
+						if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
 							logDebug( 'Copying from [#previousServerFolder#/WEB-INF/cfusion] to [#thisInstallDir#/WEB-INF/cfusion]' );
 						}
 						CFConfigService.transfer(
@@ -154,17 +154,25 @@ component {
 						var previousWebContext = previousServerFolder & '/WEB-INF/lucee-web';
 						var previousServerContext = previousServerFolder & '/WEB-INF/lucee-server';
 						// We know this for sure...
-						var mewWebContext = interceptData.serverInfo.webConfigDir;
-						var mewServerContext = interceptData.serverInfo.serverConfigDir;
+						var newWebContext = interceptData.serverInfo.webConfigDir;
+						//Lucee's server config dir doesn't include the "lucee-server" but CFConfig expects it for the server home.
+						var newServerContext = interceptData.serverInfo.serverConfigDir & '/lucee-server';
+						
+						if( newWebContext.uCase().startsWith( '/WEB-INF' ) ) {
+							newWebContext = thisInstallDir & newWebContext;
+						}
+						if( newServerContext.uCase().startsWith( '/WEB-INF' ) ) {
+							newServerContext = thisInstallDir & newServerContext;
+						}
 						
 						if( directoryExists( previousServerContext ) ) {
 							
-							if( interceptData.serverInfo.debug ) {
-								logDebug( 'Copying from [#previousServerContext#] to [#mewServerContext#]' );
+							if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
+								logDebug( 'Copying from [#previousServerContext#] to [#newServerContext#]' );
 							}
 							CFConfigService.transfer(
 								from		= previousServerContext,
-								to			= mewServerContext,
+								to			= newServerContext,
 								fromFormat	= 'luceeServer',
 								toFormat	= 'luceeServer',
 								fromVersion	= previousVersion,
@@ -175,12 +183,12 @@ component {
 
 						if( directoryExists( previousWebContext ) ) {
 								
-							if( interceptData.serverInfo.debug ) {
-								logDebug( 'Copying from [#previousWebContext#] to [#mewWebContext#]' );
+							if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
+								logDebug( 'Copying from [#previousWebContext#] to [#newWebContext#]' );
 							}
 							CFConfigService.transfer(
 								from		= previousWebContext,
-								to			= mewWebContext,
+								to			= newWebContext,
 								fromFormat	= 'luceeWeb',
 								toFormat	= 'luceeWeb',
 								fromVersion	= previousVersion,
@@ -208,7 +216,7 @@ component {
 			if( envVar.len() > 9 && left( envVar, 9 ) == 'cfconfig_' ) {
 				var name = right( envVar, len( envVar ) - 9 );
 			
-				if( interceptData.serverInfo.debug ) {
+				if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
 					logDebug( 'Found #title# [#envVar#]' );
 				}				
 				
@@ -224,7 +232,7 @@ component {
 				// Extra check for adminPassword on Lucee.  Set the web context as well
 				if( interceptData.serverInfo.engineName == 'lucee' && name == 'adminPassword' ) {
 					
-					if( interceptData.serverInfo.debug ) {
+					if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
 						logDebug( 'Also setting adminPassword to Lucee web context.' );
 					}
 					
@@ -279,7 +287,7 @@ component {
 		
 			if( CFConfigFile.len() ) {
 				
-				if( interceptData.serverInfo.debug ) {
+				if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
 					logDebug( 'Exporting CFConfig from server into [#CFConfigFile#]' );
 				}
 				
