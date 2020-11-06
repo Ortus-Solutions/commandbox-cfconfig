@@ -156,7 +156,7 @@
 				</cfscript>
 				
 				<tr style="background-color: #lineColor#;">
-					<td class="column-first <cfif propertyName.reFindNoCase( '.*-.*-.*' )>indent</cfif>">
+					<td class="column-first <cfif propertyName.reFindNoCase( '.*-.*-.*' ) or propertyName.startsWith( 'logFilesDisabled-' ) >indent</cfif>">
 						#propertyName#
 					</td>
 					<td class="column2">#left( fromValue, 50 )#</td>

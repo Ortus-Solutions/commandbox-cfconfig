@@ -222,6 +222,8 @@ component {
 					row.propertyName.startsWith( 'CFMappings-' ) 
 					|| row.propertyName.startsWith( 'datasources-' ) 
 					|| row.propertyName.startsWith( 'mailServers-' ) 
+					|| row.propertyName.startsWith( 'logFilesDisabled-' )
+					|| row.propertyName.startsWith( 'PDFServiceManagers-' )
 					|| row.propertyName.startsWith( 'caches-' ) 
 					|| row.propertyName.startsWith( 'customTagPaths-' )
 					|| row.propertyName.startsWith( 'clientStorageLocations-' )
@@ -269,8 +271,13 @@ component {
 					var equality = '      ';
 				}
 				
+				if( row.propertyName.startsWith( 'logFilesDisabled-' ) ) {
+					var indent = 1;
+				} else {
+					var indent = reReplace( row.propertyName, '[^-]', '', 'all' ).len()-1;
+				}
 				print.line( 
-					printColumnValue( ( nested ? repeatString( '  ', reReplace( row.propertyName, '[^-]', '', 'all' ).len()-1 ) : '' ) & row.propertyName & ': ', longestProp )
+					printColumnValue( ( nested ? repeatString( '  ', indent ) : '' ) & row.propertyName & ': ', longestProp )
 					& printColumnValue( ( row.toOnly || row.bothEmpty ? '-' : row.FromValue ), fromColumnWidth )
 					& equality
 					& printColumnValue( ( row.fromOnly || row.bothEmpty ? '-' : row.toValue ), toColumnWidth ),
