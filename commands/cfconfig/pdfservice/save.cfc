@@ -21,6 +21,7 @@ component {
 	* @isHTTPS True/false whether the remote service is using HTTPS
 	* @weight A number to set the weight for this service
 	* @isLocal True for local host
+	* @isEnabled True for enabled
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
@@ -32,7 +33,8 @@ component {
 		required string port,
 		boolean isHTTPS=false,
 		numeric weight=2,
-		boolean isLocal
+		boolean isLocal,
+		boolean isEnabled=true,
 		string to,
 		string toFormat
 	) {		

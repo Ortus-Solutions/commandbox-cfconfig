@@ -72,7 +72,7 @@ component {
 				for( var PDFServiceManager in PDFServiceManagers ) {
 					var PDFServiceManagerDetails = PDFServiceManagers[ PDFServiceManager ];
 					// The only guaranteed piece of info is name
-					print.boldLine( 'Name: #PDFServiceManager#' );
+					print.boldText( 'Name: #PDFServiceManager#' ).line( '  (#(PDFServiceManagerDetails.isEnabled ? 'enabled' : 'disabled')#)' );
 					if( !isNull( PDFServiceManagerDetails.hostname ) ) { print.indentedLine( 'Host/port: #PDFServiceManagerDetails.hostname#:#PDFServiceManagerDetails.port?:0#' ); }
 					if( !isNull( PDFServiceManagerDetails.weight ) ) { print.indentedLine( 'Weight: #PDFServiceManagerDetails.weight#' ); }
 					if( !isNull( PDFServiceManagerDetails.isHTTPS ) ) { print.indentedLine( 'HTTPS: #PDFServiceManagerDetails.isHTTPS#' ); }
