@@ -81,6 +81,8 @@ component {
 	* @description Description of this datasource.  Informational only.
 	* @requestExclusive Exclusive connections for request
 	* @alwaysSetTimeout Always set timeout on queries
+	* @bundleName OSGI bundle name to load the class from
+	* @bundleVersion OSGI bundle version to load the class from
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
@@ -136,6 +138,8 @@ component {
 		boolean allowStoredProcs,
 		boolean requestExclusive,
 		boolean alwaysSetTimeout,
+		string bundleName,
+		string bundleVersion,
 		string to,
 		string toFormat
 	) {		

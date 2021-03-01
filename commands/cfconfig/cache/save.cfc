@@ -37,6 +37,8 @@ component {
 	* @readOnly No idea what this does
 	* @storage Is this cache used for session or client scope storage?
 	* @custom A collection of custom values for this cache type in the format custom:timeToIdleSeconds=0
+	* @bundleName OSGI bundle name to load the class from
+	* @bundleVersion OSGI bundle version to load the class from
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
@@ -49,6 +51,8 @@ component {
 		boolean storage,
 		boolean readOnly,
 		struct custom,
+		string bundleName,
+		string bundleVersion,		
 		string to,
 		string toFormat
 	) {		
