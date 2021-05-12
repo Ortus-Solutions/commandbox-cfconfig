@@ -30,7 +30,7 @@ component singleton {
 			var serverDetails = serverService.resolveServerDetails( { name : arguments.from } );
 		// If there's no from, check for a server in this working directory
 		} else {
-			var serverDetails = serverService.resolveServerDetails( { directory : shell.pwd() } );
+			var serverDetails = serverService.resolveServerDetails( {} );
 		}
 		var serverInfo = serverDetails.serverInfo;
 		
