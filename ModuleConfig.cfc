@@ -17,7 +17,8 @@ component {
 	function configure() {
 		settings = {
 			'exportOnStop' = false,
-			'autoTransferOnUpgrade' = true
+			'autoTransferOnUpgrade' = true,
+			'JSONExpansions' : {}
 		};
 		
 		interceptors = [

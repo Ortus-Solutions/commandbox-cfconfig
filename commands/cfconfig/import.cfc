@@ -36,6 +36,24 @@
 * The version number can be left off toFormat and fromFormat when reading or writing to a CFConfig JSON file or a CommandBox server since we already know the version.
 * If you don't specify a Lucee web or Server context, we default to server. Use a format of "luceeWeb" to switch.
 * 
+* You can customize what config settings are transferred with the includeList and excludeList params.  If at least one include pattern is provided, ONLY matching 
+* settings will be included.  Nested keys such as datasources.myDSN or mailservers[1] can be used.  You may also use basic wildcards in your pattern.  A single *
+* will match any number of chars inside a key name.  A double ** will match any number of nested keys.
+* 
+* {code:bash}
+* # Include all settings startingw with "event"
+* cfconfig import from=.CFConfig.json includeList=event*
+* # Exclude all keys called "password" regardless of what struct they are in
+* cfconfig import from=.CFConfig.json excludeList=**.password
+* {code}
+* 
+* Use the append parameter to merge incomning data with any data already present.  For example, if a server already has one datasource defined and you import
+* a JSON file with 2 more unique datasources, the --apend flag will not remove the pre-existing one.
+* 
+* {code:bash}
+* cfconfig import from=.CFConfig.json includeList=datasources --append
+* {code}
+* 
 */
 component {
 	property name="serverService" inject="ServerService";
@@ -50,17 +68,33 @@ component {
 	* @fromFormat The format to read from when "from" is a directory. Ex: LuceeServer@5
 	* @toFormat The format to write to when "to" is a directory. Ex: LuceeServer@5
 	* @pauseTasks It set to true, all scheduled tasks will be saved to the "to" server in a "Paused" state
+	* @includeList List of properties to include in transfer. Use * for wildcard. i.e. mailservers,datasources.myDSN,event*
+	* @includeList.optionsUDF propertyComplete
+	* @excludeList List of properties to exclude from transfer. Use * for wildcard. i.e. mailservers,datasources.myDSN,event*
+	* @excludeList.optionsUDF propertyComplete
+	* @replace regex/replacement matches to swap data with env var expansions. i.e. replace:datasources.*.password=DB_PASSWORD
+	* @dotenvFile Absolute path to .env file for replace feature. Empty string turns off feature.
+	* @append Append config to destination instead of overwriting. Datasources, caches, etc will be merged instead of removed.
 	*/	
 	function run(
 		string from,
 		string to,
 		string fromFormat,
 		string toFormat,
-		boolean pauseTasks=false
+		boolean pauseTasks=false,
+		string includeList='',
+		string excludeList='',
+		struct replace={},
+		string dotenvFile=getCWD() & '.env',
+		boolean append=false
 		) {
 		command( 'cfconfig transfer' )
 			.params( argumentCollection = arguments )
 			.run();
+	}
+
+	function propertyComplete() {
+		return getInstance( 'BaseConfig@cfconfig-services' ).getConfigProperties();
 	}
 	
 	function serverNameComplete() {
