@@ -121,12 +121,71 @@ component {
 		string dotenvFile=getCWD() & '.env',
 		boolean append=false
 		) {
-		if( !replace.count() ) {
-			arguments.delete( 'replace' );
+
+		CFConfigService = getInstance( 'CFConfigService@cfconfig-services' );
+		Util = getInstance( 'util@commandbox-cfconfig' );
+		moduleSettings = getInstance( 'commandbox:moduleSettings:commandbox-cfconfig' );
+		
+		if( len( dotenvFile ) ) {
+			dotenvFile = resolvePath( dotenvFile );
 		}
-		command( 'cfconfig transfer' )
+		
+		arguments.from = arguments.from ?: '';
+		arguments.to = arguments.to ?: '';
+		arguments.fromFormat = arguments.fromFormat ?: '';
+		arguments.toFormat = arguments.toFormat ?: '';
+		
+		if( !from.len() && !to.len() ) {
+			error( "Please specify either a 'from' or a 'to' location.  I'm not sure what to copy where." );
+		}
+				
+		try {
+			var fromDetails = Util.resolveServerDetails( from, fromFormat, 'from' );
+			var toDetails = Util.resolveServerDetails( to, toFormat, 'to' );
+		
+			if( toDetails.format == 'json' ) {
+				// Add in any global JSON expansions
+				replace.append( moduleSettings.JSONExpansions, false );	
+			}
+			
+			if( !fromDetails.path.len() ) {
+				error( "The location for the 'from' server couldn't be determined.  Please check your spelling." );
+			}
+			
+			if( !directoryExists( fromDetails.path ) && !fileExists( fromDetails.path ) ) {
+				error( "The CF Home directory for the 'from' server doesn't exist.  [#fromDetails.path#]" );				
+			}
+			
+			if( !toDetails.path.len() ) {
+				error( "The location for the 'to' server couldn't be determined.  Please check your spelling." );
+			}
+			
+			CFConfigService.transfer(
+				from				= fromDetails.path,
+				to					= toDetails.path,
+				fromFormat			= fromDetails.format,
+				toFormat			= toDetails.format,
+				fromVersion			= fromDetails.version,
+				toVersion			= toDetails.version,
+				pauseTasks			= pauseTasks,
+				includeList			= includeList,
+				excludeList			= excludeList,
+				replace				= replace,
+				dotenvFile			= dotenvFile,
+				append				= append
+			);
+			
+		} catch( cfconfigException var e ) {
+			error( e.message, e.detail ?: '' );
+		} catch( cfconfigNoProviderFound var e ) {
+			error( e.message, e.detail ?: '' );
+		}
+		
+		print.greenLine( 'Config transferred!' );
+		
+		/*command( 'cfconfig transfer' )
 			.params( argumentCollection = arguments )
-			.run();
+			.run();*/
 	}
 
 	function propertyComplete() {
