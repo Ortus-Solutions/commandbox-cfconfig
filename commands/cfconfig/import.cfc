@@ -41,14 +41,14 @@
 * will match any number of chars inside a key name.  A double ** will match any number of nested keys.
 * 
 * {code:bash}
-* # Include all settings startingw with "event"
+* # Include all settings starting with "event"
 * cfconfig import from=.CFConfig.json includeList=event*
 * # Exclude all keys called "password" regardless of what struct they are in
 * cfconfig import from=.CFConfig.json excludeList=**.password
 * {code}
 * 
-* Use the append parameter to merge incomning data with any data already present.  For example, if a server already has one datasource defined and you import
-* a JSON file with 2 more unique datasources, the --apend flag will not remove the pre-existing one.
+* Use the append parameter to merge incoming data with any data already present.  For example, if a server already has one datasource defined and you import
+* a JSON file with 2 more unique datasources, the --append flag will not remove the pre-existing one.
 * 
 * {code:bash}
 * cfconfig import from=.CFConfig.json includeList=datasources --append
@@ -88,6 +88,9 @@ component {
 		string dotenvFile=getCWD() & '.env',
 		boolean append=false
 		) {
+		if( !replace.count() ) {
+			arguments.delete( 'replace' );
+		}
 		command( 'cfconfig transfer' )
 			.params( argumentCollection = arguments )
 			.run();

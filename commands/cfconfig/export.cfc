@@ -41,14 +41,14 @@
 * will match any number of chars inside a key name.  A double ** will match any number of nested keys.
 * 
 * {code:bash}
-* # Include all settings startingw with "event"
+* # Include all settings starting with "event"
 * cfconfig export to=.CFConfig.json includeList=event*
 * # Exclude all keys called "password" regardless of what struct they are in
 * cfconfig export to=.CFConfig.json excludeList=**.password
 * {code}
 * 
-* Use the append parameter to merge incomning data with any data already present.  For example, if a server already has one datasource defined and you import
-* a JSON file with 2 more unique datasources, the --apend flag will not remove the pre-existing one.
+* Use the append parameter to merge incoming data with any data already present.  For example, if a server already has one datasource defined and you import
+* a JSON file with 2 more unique datasources, the --append flag will not remove the pre-existing one.
 * 
 * {code:bash}
 * cfconfig export to=.CFConfig.json includeList=datasources --append
@@ -70,7 +70,7 @@
 * {code}
 * 
 * 
-* Any valid regex is possible for some clever replacements.  This examplew would create env vars such as DB_MYDSN_PORT, DB_MYDSN_HOST, and DB_MDSN_DATABASE
+* Any valid regex is possible for some clever replacements.  This example would create env vars such as DB_MYDSN_PORT, DB_MYDSN_HOST, and DB_MDSN_DATABASE
 *
 * {code:bash}
 * cfconfig export to=.CFConfig.json replace:datasources\.(.*)\.(password|class|port|host|database)=DB_\1_\2 dotenvFile=../../settings.properties
@@ -121,6 +121,9 @@ component {
 		string dotenvFile=getCWD() & '.env',
 		boolean append=false
 		) {
+		if( !replace.count() ) {
+			arguments.delete( 'replace' );
+		}
 		command( 'cfconfig transfer' )
 			.params( argumentCollection = arguments )
 			.run();
