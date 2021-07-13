@@ -52,8 +52,7 @@ component {
 		if( oConfig.CFHomePathExists( toDetails.path ) ) {
 			oConfig.read( toDetails.path );	
 		}
-				
-		print.line( arguments )
+
 		var memento = oConfig.getMemento();
 		JSONService.set( memento, arguments, thisAppend );
 		

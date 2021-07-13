@@ -141,8 +141,6 @@ component {
 		if( len( dotenvFile ) ) {
 			dotenvFile = resolvePath( dotenvFile );
 		}
-		// Add in any global JSON expansions
-		replace.append( moduleSettings.JSONExpansions, false );
 		
 		arguments.from = arguments.from ?: '';
 		arguments.to = arguments.to ?: '';
@@ -156,6 +154,11 @@ component {
 		try {
 			var fromDetails = Util.resolveServerDetails( from, fromFormat, 'from' );
 			var toDetails = Util.resolveServerDetails( to, toFormat, 'to' );
+		
+			if( toDetails.format == 'json' ) {
+				// Add in any global JSON expansions
+				replace.append( moduleSettings.JSONExpansions, false );	
+			}
 			
 			if( !fromDetails.path.len() ) {
 				error( "The location for the 'from' server couldn't be determined.  Please check your spelling." );
