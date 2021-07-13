@@ -7,6 +7,7 @@ component {
 	property name='Util' inject='util@commandbox-cfconfig';
 	property name="serverService" inject="ServerService";
 	property name="ConfigService" inject="ConfigService";
+	property name="JSONService" inject="JSONService";
 	
 	/**
 	* @property name of the property to view.  Empty for everything.
@@ -45,33 +46,15 @@ component {
 		} catch( cfconfigNoProviderFound var e ) {
 			error( e.message, e.detail ?: '' );
 		}
-		
-		// Displaying a single property
-		if( property.len() ) {
-			var validProperties = oConfig.getConfigProperties();
-			if( !validProperties.findNoCase( property ) ) {
-				error( "[#property#] is not a valid property" );
-			}
-			var result = oConfig[ 'get#property#' ]();
-			if( isNull( result ) ) {
-				error( "Configuration for [#property#] doesn't exist in this server" );
-			}
-		// Displaying all properties
-		} else {
-			var result = oConfig.getMemento();
+
+		try {
+			print.line( JSONService.show( oConfig.getMemento(), arguments.property ) );	
+		} catch( JSONException var e ) {
+			error( e.message, e.detail );
+		} catch( any var e ) {
+			rethrow;
 		}
-				
-		// Detect if this installed version of CommandBox can handle automatic JSON formatting (and coloring)
-		if( configService.getPossibleConfigSettings().findNoCase( 'JSON.ANSIColors.constant' ) ) {
-			print.line( result );
-		} else {
-			if( isSimpleValue( result ) ) {
-				print.line( result );
-			} else {
-				print.line( formatterUtil.formatJSON( result ) );
-			}	
-		}
-		
+			
 	}
 
 	function propertyComplete() {

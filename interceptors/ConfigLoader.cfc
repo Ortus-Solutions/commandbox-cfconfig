@@ -214,7 +214,7 @@ component {
 		var processVarsUDF = function( envVar, value, title ) {
 			// Loop over any that look like cfconfig_xxx
 			if( envVar.len() > 9 && left( envVar, 9 ) == 'cfconfig_' ) {
-				var name = right( envVar, len( envVar ) - 9 );
+				var name = right( envVar, len( envVar ) - 9 ).replace( '_', '.', 'all' );;
 			
 				if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
 					logDebug( 'Found #title# [#envVar#]' );
