@@ -138,6 +138,12 @@ component {
 		string dotenvFile=getCWD() & '.env',
 		boolean append=false
 	) {
+		
+		
+		CFConfigService = getInstance( 'CFConfigService@cfconfig-services' );
+		Util = getInstance( 'util@commandbox-cfconfig' );
+		moduleSettings = getInstance( dsl='commandbox:moduleSettings:commandbox-cfconfig' );
+		
 		if( len( dotenvFile ) ) {
 			dotenvFile = resolvePath( dotenvFile );
 		}

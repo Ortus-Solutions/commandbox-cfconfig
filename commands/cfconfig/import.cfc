@@ -91,7 +91,7 @@ component {
 
 		CFConfigService = getInstance( 'CFConfigService@cfconfig-services' );
 		Util = getInstance( 'util@commandbox-cfconfig' );
-		moduleSettings = getInstance( 'commandbox:moduleSettings:commandbox-cfconfig' );
+		moduleSettings = getInstance( dsl='commandbox:moduleSettings:commandbox-cfconfig' );
 
 		if( len( dotenvFile ) ) {
 			dotenvFile = resolvePath( dotenvFile );
