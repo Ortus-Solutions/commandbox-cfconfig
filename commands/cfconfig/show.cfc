@@ -48,7 +48,7 @@ component {
 		}
 
 		try {
-			print.line( JSONService.show( oConfig.getMemento(), arguments.property ) );	
+			print.line( getInstance( 'JSONService' ).show( oConfig.getMemento(), arguments.property ) );	
 		} catch( JSONException var e ) {
 			error( e.message, e.detail );
 		} catch( any var e ) {

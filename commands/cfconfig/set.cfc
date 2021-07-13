@@ -54,7 +54,7 @@ component {
 		}
 
 		var memento = oConfig.getMemento();
-		JSONService.set( memento, arguments, thisAppend );
+		getInstance( 'JSONService' ).set( memento, arguments, thisAppend );
 		
 		oConfig
 			.setMemento( memento )
