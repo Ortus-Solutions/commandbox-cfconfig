@@ -224,6 +224,7 @@ component {
 					to=interceptData.serverInfo.name
 				};
 				params[ name ] = value;
+				params.append = true;
 				
 				getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig set' } )
 					.params( argumentCollection=params )

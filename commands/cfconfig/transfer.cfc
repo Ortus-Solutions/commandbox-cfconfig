@@ -79,7 +79,7 @@
 * This example would create env vars such as DB_MYDSN_PASSWORD where MYDSN is your actual datasource name.
 *
 * {code:bash}
-* cfconfig tranfser to=.CFConfig.json replace:replace:datasources\.(.*)\.password=DB_\1_PASSWORD
+* cfconfig tranfser to=.CFConfig.json replace:datasources\.(.*)\.password=DB_\1_PASSWORD
 * {code}
 * 
 * 
