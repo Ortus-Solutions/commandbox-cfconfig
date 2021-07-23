@@ -39,6 +39,7 @@ component {
 				
 				if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
 					logDebug( 'Importing CFConfig into server [#interceptData.serverInfo.name#]' );
+					logDebug( 'From [#CFConfigFile#]' );					
 				}
 				
 				getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig import' } )
