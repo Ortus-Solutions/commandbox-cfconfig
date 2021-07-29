@@ -1,36 +1,36 @@
 /**
-* Add a new event gateway config or update an existing event gateway config. Existing event gateway config will be matched based on type.
+* Add a new lucee event gateway instance or update an existing event gateway config. Existing event gateway instance will be matched based on gateway Id.
 * 
 * {code}
-* cfconfig eventgatewayconfig save myType "description of gateway" "java.class" 30 true
-* cfconfig eventgatewayconfig save type=myType description="description of gateway" class="java.class" starttimeout=30 killontimeout=true to=serverName
+* cfconfig eventgatewaylucee save myGateway lucee.extension.gateway.AsynchronousEvents
+* cfconfig eventgatewaylucee save gatewayid=myGateway cfcpath=lucee.extension.gateway.AsynchronousEvents startupMode=disabled
 * {code}
 *
 */
+
 component {
-	
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
 	property name="serverService" inject="ServerService";
-	
+
 	/**
-	* @type The event gateway type, which you will use when adding an event gateway instance.
-	* @description Description
-	* @class Java Class
-	* @starttimeout Startup Timeout in seconds
-	* @killontimeout Stop on Startup Timeout
+	* @gatewayId An event gateway ID to identify the specific event gateway instance.
+	* @CFCPath Component path (dot delimieted) to the gateway CFC
+	* @ListenerCFCPath Component path (dot delimieted) to the listener CFC
+	* @custom A struct of additional configuration for this gateway
+	* @startupMode The startup mode of the gateway.  Values: manual, automatic, disabled
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
 	* @toFormat The format to write to. Ex: LuceeServer@5
 	*/
-	function run(required string type,
-				 required string description,
-				 required string class,
-				 numeric starttimeout,
-				 boolean killontimeout,
-				 string to,
-				 string toFormat)
+	function run(required string gatewayID,
+					required string CFCPath,
+					string listenerCFCPath,
+					struct custom={},
+					string startupMode="automatic"
+					string to,
+					string toFormat='luceeWeb')
 	{
 		var to = arguments.to ?: '';
 		var toFormat = arguments.toFormat ?: '';
@@ -54,15 +54,15 @@ component {
 		}
 		
 		// Preserve this as a struct, not an array
-		var gatewayConfigurationParams = duplicate( {}.append( arguments ) );
-		gatewayConfigurationParams.delete( 'to' );
-		gatewayConfigurationParams.delete( 'toFormat' );
+		var gatewayInstanceParams = duplicate( {}.append( arguments ) );
+		gatewayInstanceParams.delete( 'to' );
+		gatewayInstanceParams.delete( 'toFormat' );
 		
 		// Add mapping to config and save.
-		oConfig.addGatewayConfiguration( argumentCollection = gatewayConfigurationParams )
+		oConfig.addGatewayLucee( argumentCollection = gatewayInstanceParams )
 			.write( toDetails.path );
 				
-		print.greenLine( 'Event gateway configuration [#arguments.type#] saved.' );
+		print.greenLine( 'Lucee Event gateway instance [#arguments.gatewayId#] saved.' );
 	}
 	
 	function serverNameComplete() {
