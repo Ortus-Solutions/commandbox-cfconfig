@@ -21,6 +21,11 @@ component {
 		var results = findCFConfigFile( interceptData.serverInfo );
 		var CFConfigFile = results.CFConfigFile;
 		var pauseTasks = results.pauseTasks;
+		var toFormat = results.toFormat;
+		var oppositetoFormat = 'luceeWeb';
+		if( toFormat == oppositetoFormat ) {
+			oppositetoFormat = 'luceeServer';
+		}
 		
 		// Get the config settings
 		var configSettings = ConfigService.getconfigSettings();
@@ -38,7 +43,7 @@ component {
 			if( isJSON( rawJSON ) ) {
 				
 				if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
-					logDebug( 'Importing CFConfig into server [#interceptData.serverInfo.name#]' );
+					logDebug( 'Importing CFConfig into server [#interceptData.serverInfo.name#] #len( toFormat ) ? "(#toFormat#)" : ""#' );
 					logDebug( 'From [#CFConfigFile#]' );					
 				}
 				
@@ -47,7 +52,8 @@ component {
 						from=CFConfigFile,
 						fromFormat='JSON',
 						to=interceptData.serverInfo.name,
-						pauseTasks=pauseTasks
+						pauseTasks=pauseTasks,
+						toFormat=toFormat
 					).run();
 					
 				// Extra check for adminPassword on Lucee.  Set the web context as well
@@ -57,13 +63,13 @@ component {
 				if( interceptData.serverInfo.engineName == 'lucee' && cfconfigJSON.keyExists( 'adminPassword' ) ) {
 					
 					if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
-						logDebug( 'Also setting adminPassword to Lucee web context.' );
+						logDebug( 'Also setting adminPassword to #oppositetoFormat# context.' );
 					}
 					
 					getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig set' } )
 						.params( 
 							to=interceptData.serverInfo.name,
-							toFormat='luceeWeb',
+							toFormat=oppositetoFormat,
 							adminPassword=cfconfigJSON.adminPassword
 						 ).run();
 				}
@@ -235,10 +241,10 @@ component {
 				if( interceptData.serverInfo.engineName == 'lucee' && name == 'adminPassword' ) {
 					
 					if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
-						logDebug( 'Also setting adminPassword to Lucee web context.' );
+						logDebug( 'Also setting adminPassword to #oppositetoFormat# context.' );
 					}
 					
-					params.toFormat = 'luceeWeb';
+					params.toFormat = oppositetoFormat;
 					getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig set' } )
 						.params( argumentCollection=params )
 						.run();
@@ -286,6 +292,7 @@ component {
 		if( exportOnStop ) {
 			var results = findCFConfigFile( interceptData.serverInfo );
 			var CFConfigFile = results.CFConfigFile;
+			var toFormat = results.toFormat;
 		
 			if( CFConfigFile.len() ) {
 				
@@ -297,7 +304,8 @@ component {
 					.params(
 						to=CFConfigFile,
 						toFormat='JSON',
-						from=interceptData.serverInfo.name
+						from=interceptData.serverInfo.name,
+						fromFormat=toFormat
 					).run();
 			}
 			
@@ -308,7 +316,8 @@ component {
 	private struct function findCFConfigFile( serverInfo ) {
 		var results = {
 			CFConfigFile = '',
-			pauseTasks = false
+			pauseTasks = false,
+			toFormat = ''
 		};
 		
 		// An env var of cfconfig wins
@@ -323,6 +332,16 @@ component {
 			
 		}
 		
+		if( systemSettings.getSystemSetting( 'cfconfigtoformat', '' ).len() ) {
+			
+			results.toFormat = systemSettings.getSystemSetting( 'cfconfigtoformat' );
+			
+			if( serverInfo.debug ) {
+				logDebug( 'Overriding CFCconfig toFormat to #results.toFormat# from environment variable.' );
+			}
+			
+		}
+		
 		// If there is a server.json file for this server
 		var serverJSON = {};
 		if( !results.CFConfigFile.len()
@@ -333,6 +352,17 @@ component {
 				serverJSON = serverService.readServerJSON( serverInfo.serverConfigFile );
 				// And swap out any system settings
 				systemSettings.expandDeepSystemSettings( serverJSON );
+		}
+		
+		// If there is a CFConfigToFormat specified, let's use it.
+		if( serverJSON.keyExists( 'CFConfigToFormat' )
+			&& serverJSON.CFConfigToFormat.len() ) {
+				
+				results.toFormat = serverJSON.CFConfigToFormat;
+				
+				if( serverInfo.debug ) {
+					logDebug( 'Overriding CFCconfig toFormat to #results.toFormat# from server.json.' );
+				}
 		}
 		
 		// If there is a CFConfig specified, let's use it.
@@ -361,7 +391,11 @@ component {
 		}
 
 		// fall back to file name by convention
-		var conventionLocation = normalizeSlashes( serverInfo.webroot ) & '/.cfconfig.json';
+		var conventionLocation = normalizeSlashes( serverInfo.webroot );
+		if( conventionLocation.endsWith( '/' ) ) {
+			conventionLocation = conventionLocation.left( -1 );
+		}
+		var conventionLocation = conventionLocation & '/.cfconfig.json';
 			
 		if( !results.CFConfigFile.len()
 			&& fileExists( conventionLocation ) ) {
