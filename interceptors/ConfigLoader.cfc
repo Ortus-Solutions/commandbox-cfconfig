@@ -12,20 +12,19 @@ component {
 	}
 		
 	function onServerInstall( interceptData ) {
+		interceptData.serverInfo.verbose = interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug;
 		var en = interceptData.installDetails.engineName;
 		// Bail right now if this server isn't a CF engine.
 		if( !( en contains 'lucee' || en contains 'railo' || en contains 'adobe' ) ) {
 			return;
 		}
 		
-		var results = findCFConfigFile( interceptData.serverInfo );
-		var CFConfigFile = results.CFConfigFile;
+		var results = findCFConfigFile( interceptData );
+		var CFConfigFiles = results.CFConfigFiles;
 		var pauseTasks = results.pauseTasks;
-		var toFormat = results.toFormat;
-		var oppositetoFormat = 'luceeWeb';
-		if( toFormat == oppositetoFormat ) {
-			oppositetoFormat = 'luceeServer';
-		}
+		var previousAdminPassPlain = '';
+		var previousAdminPassHashed = '';
+		var previousAdminPassSalt = '';
 		
 		// Get the config settings
 		var configSettings = ConfigService.getconfigSettings();
@@ -38,44 +37,48 @@ component {
 		interceptData.serverInfo.customServerFolder = normalizeSlashes( interceptData.serverInfo.customServerFolder );
 		
 		// If we found a CFConfig JSON file, let's import it!
-		if( CFConfigFile.len() ) {
-			var rawJSON = fileRead( CFConfigFile );
-			if( isJSON( rawJSON ) ) {
-				
-				if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
-					logDebug( 'Importing CFConfig into server [#interceptData.serverInfo.name#] #len( toFormat ) ? "(#toFormat#)" : ""#' );
-					logDebug( 'From [#CFConfigFile#]' );					
-				}
-				
-				getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig import' } )
-					.params(
-						from=CFConfigFile,
-						fromFormat='JSON',
-						to=interceptData.serverInfo.name,
-						pauseTasks=pauseTasks,
-						toFormat=toFormat
-					).run();
-					
-				// Extra check for adminPassword on Lucee.  Set the web context as well
-				var cfconfigJSON = deserializeJSON( rawJSON );
-				// And swap out any system settings
-				systemSettings.expandDeepSystemSettings( cfconfigJSON );
-				if( interceptData.serverInfo.engineName == 'lucee' && cfconfigJSON.keyExists( 'adminPassword' ) ) {
-					
-					if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
-						logDebug( 'Also setting adminPassword to #oppositetoFormat# context.' );
+		if( CFConfigFiles.count() ) {
+			
+			for( var toFormat in CFConfigFiles ) {
+				var CFConfigFileArray = CFConfigFiles[ toFormat ];
+				var firstOfThisFormat = true;
+				for( var CFConfigFile in CFConfigFileArray ) {					
+					var rawJSON = fileRead( CFConfigFile );
+					if( isJSON( rawJSON ) ) {
+						
+						if( interceptData.serverInfo.verbose ) {
+							logDebug( '#( firstOfThisFormat ? "Importing" : "Appending" )# #toFormat# config from [#CFConfigFile#]' );
+						}
+						
+						command( 'cfconfig import' )
+							.params(
+								from=CFConfigFile,
+								fromFormat='JSON',
+								to=interceptData.serverInfo.name,
+								pauseTasks=pauseTasks,
+								toFormat=toFormat,
+								// If there is more than one config file for the same format, append all subsequent imports
+								append=!firstOfThisFormat
+							).run();
+							
+						// Extra check for adminPassword on Lucee.  Set the web context as well
+						var cfconfigJSON = deserializeJSON( rawJSON );
+						// And swap out any system settings
+						systemSettings.expandDeepSystemSettings( cfconfigJSON );
+						if( cfconfigJSON.keyExists( 'adminPassword' ) ) {
+							previousAdminPassPlain = cfconfigJSON.adminPassword;
+						}
+						if( cfconfigJSON.keyExists( 'hspw' ) && cfconfigJSON.keyExists( 'adminSalt' ) ) {
+							previousAdminPassHashed = cfconfigJSON.hspw;
+							previousAdminPassSalt = cfconfigJSON.adminSalt;
+						}
+							
+					} else {
+						logError( 'CFConfig file doesn''t contain valid JSON! [#CFConfigFile#]' );
 					}
 					
-					getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig set' } )
-						.params( 
-							to=interceptData.serverInfo.name,
-							toFormat=oppositetoFormat,
-							adminPassword=cfconfigJSON.adminPassword
-						 ).run();
-				}
-						
-			} else {
-				logError( 'CFConfig file doesn''t contain valid JSON! [#CFConfigFile#]' );
+					firstOfThisFormat = false;
+				} 
 			}
 		// No JSON file found to import and this is the initial install
 		} else if( interceptData.installDetails.initialInstall
@@ -143,7 +146,7 @@ component {
 					
 					if( thisEngine == 'adobe' ) {
 						
-						if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
+						if( interceptData.serverInfo.verbose ) {
 							logDebug( 'Copying from [#previousServerFolder#/WEB-INF/cfusion] to [#thisInstallDir#/WEB-INF/cfusion]' );
 						}
 						CFConfigService.transfer(
@@ -174,7 +177,7 @@ component {
 						
 						if( directoryExists( previousServerContext ) ) {
 							
-							if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
+							if( interceptData.serverInfo.verbose ) {
 								logDebug( 'Copying from [#previousServerContext#] to [#newServerContext#]' );
 							}
 							CFConfigService.transfer(
@@ -190,7 +193,7 @@ component {
 
 						if( directoryExists( previousWebContext ) ) {
 								
-							if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
+							if( interceptData.serverInfo.verbose ) {
 								logDebug( 'Copying from [#previousWebContext#] to [#newWebContext#]' );
 							}
 							CFConfigService.transfer(
@@ -221,33 +224,41 @@ component {
 		var processVarsUDF = function( envVar, value, title ) {
 			// Loop over any that look like cfconfig_xxx
 			if( envVar.len() > 9 && left( envVar, 9 ) == 'cfconfig_' ) {
-				var name = right( envVar, len( envVar ) - 9 ).replace( '_', '.', 'all' );;
+				var name = right( envVar, len( envVar ) - 9 );
+				var toFormat = createFormat( interceptData, 'server' );
+				if( name.left( 4 ) == 'web_' ) {
+					var name = right( name, len( name ) - 4 );
+					toFormat = createFormat( interceptData, 'web' );	
+				}
+				if( name.left( 7 ) == 'server_' ) {				
+					var name = right( name, len( name ) - 7 );	
+				}
+				name = name.replace( '_', '.', 'all' );
 			
-				if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
-					logDebug( 'Found #title# [#envVar#]' );
+				if( interceptData.serverInfo.verbose ) {
+					logDebug( 'Setting #title# [#envVar#] into #toFormat#' );
 				}				
 				
 				var params = {
-					to=interceptData.serverInfo.name
+					to=interceptData.serverInfo.name,
+					toFormat = toFormat
 				};
 				params[ name ] = value;
 				params.append = true;
 				
-				getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig set' } )
+				command( 'cfconfig set' )
 					.params( argumentCollection=params )
 					.run();
-					
-				// Extra check for adminPassword on Lucee.  Set the web context as well
-				if( interceptData.serverInfo.engineName == 'lucee' && name == 'adminPassword' ) {
-					
-					if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
-						logDebug( 'Also setting adminPassword to #oppositetoFormat# context.' );
-					}
-					
-					params.toFormat = oppositetoFormat;
-					getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig set' } )
-						.params( argumentCollection=params )
-						.run();
+				
+				
+				if( name == 'adminPassword' ) {
+					previousAdminPassPlain = value;
+				}
+				if( name == 'hspw' ) {
+					previousAdminPassHashed = value;
+				}
+				if( name == 'adminSalt' ) {
+					previousAdminPassSalt = value;
 				}
 				
 			}
@@ -274,7 +285,104 @@ component {
 			}	
 		}
 		
-	}
+		var util = application.wirebox.getInstance( 'util@commandbox-cfconfig' );
+		// Check for missing passwords
+		var fromDetails = Util.resolveServerDetails( interceptData.serverInfo.name, '', 'from' );
+		var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version ).setCFHomePath( fromDetails.path );
+		var currentServerSettings = {};
+		if( oConfig.CFHomePathExists() ) {
+			currentServerSettings = oConfig.read().getMemento();	
+		}			
+		
+		var randomPass = createUUID().replace( '-', '', 'all' );
+		if( en contains 'adobe' && (interceptData.serverInfo.profile ?: '') == 'production' ) {
+			if( ( !len( currentServerSettings.adminPassword ?: '' ) && !len( currentServerSettings.ACF11Password ?: '' ) ) || ( currentServerSettings.adminPassword ?: '' ) == 'commandbox' ) {
+				if( ( currentServerSettings.adminPassword ?: '' ) == 'commandbox' ) {
+					logWarn( 'Insecure default admin password found and profile is production. Setting your admin password to [#randomPass#]' );	
+				} else {
+					logWarn( 'No admin password found and profile is production. Setting your admin password to [#randomPass#]' );
+				}		 	
+				command( 'cfconfig set' )
+					.params( 
+						to=interceptData.serverInfo.name,
+						append = true,
+						adminPassword = randomPass 
+					).run();	
+			}
+			
+		} else if( ( en contains 'lucee' || en contains 'railo' ) ) {
+			if( !len( currentServerSettings.adminPassword ?: '' ) && !len( currentServerSettings.hspw ?: '' ) && !len( currentServerSettings.pw ?: '' ) ) {
+				if( len( previousAdminPassPlain ) ) {
+					logWarn( 'No Server context admin password found. Setting your admin password to the same as your Web context password.' );
+					command( 'cfconfig set' )
+						.params( 
+							to=interceptData.serverInfo.name,
+							append = true,
+							adminPassword = previousAdminPassPlain 
+						).run();
+				} else if( len( previousAdminPassHashed ) && len( previousAdminPassSalt ) ) {
+					logWarn( 'No Server context admin password found. Setting your admin password to the same as your Web context password.' );
+					command( 'cfconfig set' )
+						.params( 
+							to=interceptData.serverInfo.name,
+							append = true,
+							hspw = previousAdminPassHashed,
+							adminSalt = previousAdminPassSalt 
+						).run();
+				} else if( (interceptData.serverInfo.profile ?: '') == 'production' ) {					
+					logWarn( 'No Server context admin password found and profile is production. Setting your admin password to [#randomPass#]' );				 	
+					command( 'cfconfig set' )
+						.params( 
+							to=interceptData.serverInfo.name,
+							append = true,
+							adminPassword = randomPass 
+						).run();
+				}
+			} // end server context check
+			
+			var thisFormat = ( en contains 'lucee' ? 'lucee' : 'railo' ) & 'web';
+			var fromDetails = Util.resolveServerDetails( interceptData.serverInfo.name, thisFormat, 'from' );
+			var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version ).setCFHomePath( fromDetails.path );
+			var currentServerSettings = {};
+			if( oConfig.CFHomePathExists() ) {
+				currentServerSettings = oConfig.read().getMemento();	
+			}
+			
+			if( !len( currentWebSettings.adminPassword ?: '' ) && !len( currentWebSettings.hspw ?: '' ) && !len( currentServerSettings.pw ?: '' ) ) {
+				if( len( previousAdminPassPlain ) ) {
+					logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
+					command( 'cfconfig set' )
+						.params( 
+							to=interceptData.serverInfo.name,
+							toFormat=thisFormat,
+							append = true,
+							adminPassword = previousAdminPassPlain 
+						).run();
+				} else if( len( previousAdminPassHashed ) && len( previousAdminPassSalt ) ) {
+					logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
+					command( 'cfconfig set' )
+						.params( 
+							to=interceptData.serverInfo.name,
+							toFormat=thisFormat,
+							append = true,
+							hspw = previousAdminPassHashed,
+							adminSalt = previousAdminPassSalt 
+						).run();
+				} else if( (interceptData.serverInfo.profile ?: '') == 'production' ) {					
+					logWarn( 'No Web context admin password found and profile is production. Setting your admin password to [#randomPass#]' );				 	
+					command( 'cfconfig set' )
+						.params( 
+							to=interceptData.serverInfo.name,
+							toFormat=thisFormat,
+							append = true,
+							adminPassword = randomPass 
+						).run();
+				}
+			} // end webcontext check
+			
+		} // end what engine?
+		
+	} // end function
 	
 	function onServerStop( interceptData ) {
 
@@ -290,62 +398,87 @@ component {
 		// Does the user want us to export setting when the server stops?
 		var exportOnStop = configSettings.modules[ 'commandbox-cfconfig' ].exportOnStop ?: false; 
 		if( exportOnStop ) {
-			var results = findCFConfigFile( interceptData.serverInfo );
-			var CFConfigFile = results.CFConfigFile;
-			var toFormat = results.toFormat;
+			var results = findCFConfigFile( interceptData );
+			var CFConfigFiles = results.CFConfigFiles;
 		
-			if( CFConfigFile.len() ) {
-				
-				if( interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug ) {
-					logDebug( 'Exporting CFConfig from server into [#CFConfigFile#]' );
+			if( CFConfigFiles.count() ) {
+				for( var fromFormat in CFConfigFiles ) {
+					var CFConfigFileArray = CFConfigFiles[ fromFormat ];
+					var CFConfigFile = CFConfigFileArray.first();
+					
+					if( interceptData.serverInfo.verbose ) {
+						logDebug( 'Exporting CFConfig from #fromFormat# into [#CFConfigFile#]' );
+					}
+					
+					command( 'cfconfig export' )
+						.params(
+							to=CFConfigFile,
+							toFormat='JSON',
+							from=interceptData.serverInfo.name,
+							fromFormat=fromFormat
+						).run();
 				}
-				
-				getWirebox().getInstance( name='CommandDSL', initArguments={ name : 'cfconfig export' } )
-					.params(
-						to=CFConfigFile,
-						toFormat='JSON',
-						from=interceptData.serverInfo.name,
-						fromFormat=toFormat
-					).run();
 			}
 			
 		}
 				
 	}
 	
-	private struct function findCFConfigFile( serverInfo ) {
+	private function createFormat( interceptData, context='' ) {
+		var en = interceptData.installDetails.engineName ?: interceptData.serverInfo.engineName;
+		var baseEngineName = 'adobe';
+		if( en contains 'lucee' ) {
+			baseEngineName = 'lucee';
+		}
+		if( en contains 'railo' ) {
+			baseEngineName = 'railo';
+		}
+		if( baseEngineName == 'adobe' ) {
+			return baseEngineName;
+		}
+		return baseEngineName & context;
+	}
+	
+	private function addConfigFile( interceptData, context='', CFConfigFiles, thisFile, foundLocation ) {
+		var thisFormat = createFormat( interceptData, context );
+		CFConfigFiles[ thisFormat ] = CFConfigFiles[ thisFormat ] ?: [];
+		CFConfigFiles[ thisFormat ].append( thisFile );
+		
+		if( interceptData.serverInfo.verbose ) {
+			logDebug( 'Found CFConfig JSON in #foundLocation#.' );
+		}			
+		
+	}
+	
+	private struct function findCFConfigFile( interceptData ) {
+		var serverInfo = interceptData.serverInfo;
+		
 		var results = {
-			CFConfigFile = '',
-			pauseTasks = false,
-			toFormat = ''
+			CFConfigFiles = {				
+			},
+			pauseTasks = false
 		};
 		
 		// An env var of cfconfig wins
 		if( systemSettings.getSystemSetting( 'cfconfigfile', '' ).len() ) {
-			
-			results.CFConfigFile = systemSettings.getSystemSetting( 'cfconfigfile' );
-			
-			if( serverInfo.debug ) {
-				logDebug( 'Found CFConfigFile environment variable.' );
-				logDebug( 'CFConfig file set to [#results.CFConfigFile#].' );
-			}
-			
+			var thisFile = systemSettings.getSystemSetting( 'cfconfigfile' );
+			thisFile = fileSystemUtil.resolvePath( thisFile, serverInfo.webroot );
+			addConfigFile( interceptData, 'server', results.CFConfigFiles, thisFile, '"cfconfigfile" environment variable' );
 		}
-		
-		if( systemSettings.getSystemSetting( 'cfconfigtoformat', '' ).len() ) {
-			
-			results.toFormat = systemSettings.getSystemSetting( 'cfconfigtoformat' );
-			
-			if( serverInfo.debug ) {
-				logDebug( 'Overriding CFCconfig toFormat to #results.toFormat# from environment variable.' );
-			}
-			
+		if( systemSettings.getSystemSetting( 'cfconfigweb', '' ).len() ) {
+			var thisFile = systemSettings.getSystemSetting( 'cfconfigweb' );
+			thisFile = fileSystemUtil.resolvePath( thisFile, serverInfo.webroot );
+			addConfigFile( interceptData, 'web', results.CFConfigFiles, thisFile, '"cfconfigweb" environment variable' );
+		}
+		if( systemSettings.getSystemSetting( 'cfconfigserver', '' ).len() ) {
+			var thisFile = systemSettings.getSystemSetting( 'cfconfigserver' );
+			thisFile = fileSystemUtil.resolvePath( thisFile, serverInfo.webroot );
+			addConfigFile( interceptData, 'server', results.CFConfigFiles, thisFile, '"cfconfigserver" environment variable' );			
 		}
 		
 		// If there is a server.json file for this server
 		var serverJSON = {};
-		if( !results.CFConfigFile.len()
-			&& serverInfo.keyExists( 'serverConfigFile' ) 
+		if( serverInfo.keyExists( 'serverConfigFile' ) 
 			&& serverInfo.serverConfigFile.len()
 			&& fileExists( serverInfo.serverConfigFile ) ) {
 				// Read it in
@@ -353,29 +486,52 @@ component {
 				// And swap out any system settings
 				systemSettings.expandDeepSystemSettings( serverJSON );
 		}
-		
-		// If there is a CFConfigToFormat specified, let's use it.
-		if( serverJSON.keyExists( 'CFConfigToFormat' )
-			&& serverJSON.CFConfigToFormat.len() ) {
 				
-				results.toFormat = serverJSON.CFConfigToFormat;
-				
-				if( serverInfo.debug ) {
-					logDebug( 'Overriding CFCconfig toFormat to #results.toFormat# from server.json.' );
-				}
-		}
-		
 		// If there is a CFConfig specified, let's use it.
 		if( serverJSON.keyExists( 'CFConfigFile' )
 			&& serverJSON.CFConfigFile.len() ) {
 				
 				// Resolve paths to be relative to the location of the server.json
-				results.CFConfigFile = fileSystemUtil.resolvePath( serverJSON.CFConfigFile, getDirectoryFromPath( serverInfo.serverConfigFile ) );
+				var thisFile = fileSystemUtil.resolvePath( serverJSON.CFConfigFile, getDirectoryFromPath( serverInfo.serverConfigFile ) );
+				addConfigFile( interceptData, 'server', results.CFConfigFiles, thisFile, '"CFConfigFile" server.json key' );
+		}		
+		// If there is a CFConfig object.
+		if( serverJSON.keyExists( 'CFConfig' )
+			&& isStruct( serverJSON.CFConfig ) ) {
+						
+			if( serverJSON.CFConfig.keyExists( 'File' )
+				&& serverJSON.CFConfig.File.len() ) {					
+					// Resolve paths to be relative to the location of the server.json
+					var thisFile = fileSystemUtil.resolvePath( serverJSON.CFConfig.File, getDirectoryFromPath( serverInfo.serverConfigFile ) );
+					addConfigFile( interceptData, 'server', results.CFConfigFiles, thisFile, '"CFConfig.file" server.json key' );
+			}
+						
+			if( serverJSON.CFConfig.keyExists( 'server' )
+				&& serverJSON.CFConfig.server.len() ) {					
+					// Resolve paths to be relative to the location of the server.json
+					var thisFile = fileSystemUtil.resolvePath( serverJSON.CFConfig.server, getDirectoryFromPath( serverInfo.serverConfigFile ) );
+					addConfigFile( interceptData, 'server', results.CFConfigFiles, thisFile, '"CFConfig.server" server.json key' );
+			}
+						
+			if( serverJSON.CFConfig.keyExists( 'web' )
+				&& serverJSON.CFConfig.web.len() ) {					
+					// Resolve paths to be relative to the location of the server.json
+					var thisFile = fileSystemUtil.resolvePath( serverJSON.CFConfig.web, getDirectoryFromPath( serverInfo.serverConfigFile ) );
+					addConfigFile( interceptData, 'web', results.CFConfigFiles, thisFile, '"CFConfig.web" server.json key' );
+			}
+			
+			// Check for flag to keep tasks paused.
+			if( serverJSON.CFConfig.keyExists( 'pauseTasks' )
+				&& isBoolean( serverJSON.CFConfig.pauseTasks ) ) {
+					
+					// Resolve paths to be relative to the location of the server.json
+					results.pauseTasks = serverJSON.CFConfig.pauseTasks;
+					
+					if( serverInfo.verbose && results.pauseTasks ) {
+						logDebug( 'CFConfig will import scheduled tasks as paused.' );
+					}
+			}
 				
-				if( serverInfo.debug ) {
-					logDebug( 'Found CFConfig file in [#serverInfo.serverConfigFile#].' );
-					logDebug( 'CFConfig file set to [#results.CFConfigFile#].' );
-				}
 		}
 		
 		// Check for flag to keep tasks paused.
@@ -385,28 +541,32 @@ component {
 				// Resolve paths to be relative to the location of the server.json
 				results.pauseTasks = serverJSON.CFConfigPauseTasks;
 				
-				if( serverInfo.debug && results.pauseTasks ) {
+				if( serverInfo.verbose && results.pauseTasks ) {
 					logDebug( 'CFConfig will import scheduled tasks as paused.' );
 				}
 		}
 
 		// fall back to file name by convention
-		var conventionLocation = normalizeSlashes( serverInfo.webroot );
-		if( conventionLocation.endsWith( '/' ) ) {
-			conventionLocation = conventionLocation.left( -1 );
+		var conventionLocationRoot = normalizeSlashes( serverInfo.webroot );
+		if( conventionLocationRoot.endsWith( '/' ) ) {
+			conventionLocationRoot = conventionLocationRoot.left( -1 );
 		}
-		var conventionLocation = conventionLocation & '/.cfconfig.json';
-			
-		if( !results.CFConfigFile.len()
-			&& fileExists( conventionLocation ) ) {
-				
-				if( serverInfo.debug ) {
-					logDebug( 'Found CFConfig file by convention in webroot.' );
-					logDebug( 'CFConfig file set to [#conventionLocation#].' );
-				}
-				
-				results.CFConfigFile = conventionLocation;
-			}
+		var conventionLocation = conventionLocationRoot & '/.cfconfig.json';
+		var conventionLocationWeb = conventionLocationRoot & '/.cfconfig-web.json';
+		var conventionLocationServer = conventionLocationRoot & '/.cfconfig-server.json';
+		
+		// We only look for a .cfconfig.json file by convention if we already haven't found any JSON for adobe or the lucee server context
+		if( !results.CFConfigFiles.keyExists( createFormat( interceptData, 'server' ) ) && fileExists( conventionLocation ) ) {
+				addConfigFile( interceptData, 'server', results.CFConfigFiles, conventionLocation, '".cfconfig.json" file in web root by convention' );
+		}
+		// We only look for a .cfconfig-server.json file by convention if we already haven't found any JSON for railo or the lucee web context
+		if( !results.CFConfigFiles.keyExists( createFormat( interceptData, 'web' ) ) && fileExists( conventionLocationWeb ) ) {
+			addConfigFile( interceptData, 'web', results.CFConfigFiles, conventionLocationWeb, '".cfconfig-web.json" file in web root by convention' );	
+		}
+		// We only look for a .cfconfig-web.json file by convention if we already haven't found any JSON for railo or the lucee server context
+		if( !results.CFConfigFiles.keyExists( createFormat( interceptData, 'server' ) ) && fileExists( conventionLocationServer ) ) {
+			addConfigFile( interceptData, 'server', results.CFConfigFiles, conventionLocationServer, '".cfconfig-server.json" file in web root by convention' );	
+		}
 			
 		return results;		
 	}
@@ -452,5 +612,14 @@ component {
 			consoleLogger.debug( message );
 		}
 	}
-	
+
+
+	/**
+	 * Run another command by DSL.
+	 * @name The name of the command to run.
+ 	 **/
+	function command( required name ) {
+		return getinstance( name='CommandDSL', initArguments={ name : arguments.name } );
+	}
+		
 }
