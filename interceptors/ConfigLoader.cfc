@@ -292,8 +292,8 @@ component {
 		var currentServerSettings = {};
 		if( oConfig.CFHomePathExists() ) {
 			currentServerSettings = oConfig.read().getMemento();	
-		}			
-		
+		}
+
 		var randomPass = createUUID().replace( '-', '', 'all' );
 		if( en contains 'adobe' && (interceptData.serverInfo.profile ?: '') == 'production' ) {
 			if( ( !len( currentServerSettings.adminPassword ?: '' ) && !len( currentServerSettings.ACF11Password ?: '' ) ) || ( currentServerSettings.adminPassword ?: '' ) == 'commandbox' ) {
