@@ -343,12 +343,12 @@ component {
 			var thisFormat = ( en contains 'lucee' ? 'lucee' : 'railo' ) & 'web';
 			var fromDetails = Util.resolveServerDetails( interceptData.serverInfo.name, thisFormat, 'from' );
 			var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version ).setCFHomePath( fromDetails.path );
-			var currentServerSettings = {};
+			var currentWebSettings = {};
 			if( oConfig.CFHomePathExists() ) {
-				currentServerSettings = oConfig.read().getMemento();	
+				currentWebSettings = oConfig.read().getMemento();	
 			}
 			
-			if( !len( currentWebSettings.adminPassword ?: '' ) && !len( currentWebSettings.hspw ?: '' ) && !len( currentServerSettings.pw ?: '' ) ) {
+			if( !len( currentWebSettings.adminPassword ?: '' ) && !len( currentWebSettings.hspw ?: '' ) && !len( currentWebSettings.pw ?: '' ) ) {
 				if( len( previousAdminPassPlain ) ) {
 					logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
 					command( 'cfconfig set' )
