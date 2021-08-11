@@ -223,7 +223,7 @@ component {
 		
 		var processVarsUDF = function( envVar, value, title ) {
 			// Loop over any that look like cfconfig_xxx
-			if( envVar.len() > 9 && left( envVar, 9 ) == 'cfconfig_' ) {
+			if( envVar.len() > 9 && ( left( envVar, 9 ) == 'cfconfig_' || left( envVar, 9 ) == 'cfconfig.' ) ) {
 				var name = right( envVar, len( envVar ) - 9 );
 				var toFormat = createFormat( interceptData, 'server' );
 				if( name.left( 4 ) == 'web_' ) {
