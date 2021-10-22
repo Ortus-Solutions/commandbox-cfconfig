@@ -60,6 +60,7 @@ component {
 	* @PDFReportPath A folder path or .pdf file path for a PDF report to be written to.
 	* @toDisplayName The "to" server's display name to use on reports.
 	* @fromDisplayName The "from" server's display name to use on reports.
+	* @emptyIsUndefined True will compare empty strings the same as undefined
 	*/	
 	function run(
 		string from,
@@ -78,7 +79,8 @@ component {
 		string HTMLReportPath = '',
 		string PDFReportPath = '',
 		string toDisplayName,
-		string fromDisplayName
+		string fromDisplayName,
+		boolean emptyIsUndefined=false
 	) {
 		arguments.from = arguments.from ?: '';
 		arguments.to = arguments.to ?: '';
@@ -113,12 +115,13 @@ component {
 			}
 			
 			var qryDiff = CFConfigService.diff(
-				from		= fromDetails.path,
-				to			= toDetails.path,
-				fromFormat	= fromDetails.format,
-				toFormat	= toDetails.format,
-				fromVersion	= fromDetails.version,
-				toVersion	= toDetails.version
+				from				= fromDetails.path,
+				to					= toDetails.path,
+				fromFormat			= fromDetails.format,
+				toFormat			= toDetails.format,
+				fromVersion			= fromDetails.version,
+				toVersion			= toDetails.version,
+				emptyIsUndefined	= emptyIsUndefined
 			);
 			
 			qryDiff = queryExecute( 
