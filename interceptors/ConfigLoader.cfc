@@ -485,6 +485,9 @@ component {
 				serverJSON = serverService.readServerJSON( serverInfo.serverConfigFile );
 				// And swap out any system settings
 				systemSettings.expandDeepSystemSettings( serverJSON );
+				if( structKeyExists( serverService, 'loadOverrides' ) ) {
+					serverService.loadOverrides( serverJSON, serverInfo )	
+				}
 		}
 				
 		// If there is a CFConfig specified, let's use it.
