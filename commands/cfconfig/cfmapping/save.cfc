@@ -23,6 +23,7 @@ component {
 	* @listenerType 
 	* @primary Strings containing one of "physical", "archive"
 	* @readOnly True/false
+	* @toplevel Defines whether a mapping is a top level mapping. If yes it can be called over the URL.  True/false
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
@@ -37,6 +38,7 @@ component {
 		string listenerType,
 		string primary,
 		boolean readOnly,
+		boolean toplevel,
 		string to,
 		string toFormat
 	) {		
