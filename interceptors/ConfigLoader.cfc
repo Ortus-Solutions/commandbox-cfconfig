@@ -13,10 +13,16 @@ component {
 		
 	function onServerInstall( interceptData ) {
 		interceptData.serverInfo.verbose = interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug;
+		
 		var en = interceptData.installDetails.engineName;
 		// Bail right now if this server isn't a CF engine.
 		if( !( en contains 'lucee' || en contains 'railo' || en contains 'adobe' ) ) {
 			return;
+		}
+		
+		if( jobEnabled ) {
+			var job = wirebox.getInstance( 'interactiveJob' );
+			job.start( 'Loading CFConfig into server' );	
 		}
 		
 		var results = findCFConfigFile( interceptData );
@@ -381,6 +387,10 @@ component {
 			} // end webcontext check
 			
 		} // end what engine?
+		
+		if( jobEnabled ) {
+    		job.complete( interceptData.serverInfo.verbose );	
+		}
 		
 	} // end function
 	
