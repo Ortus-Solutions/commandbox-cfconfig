@@ -243,8 +243,8 @@ component {
 			
 				if( interceptData.serverInfo.verbose ) {
 					logDebug( 'Setting #title# [#envVar#] into #toFormat#' );
-				}				
-				
+				}
+
 				var params = {
 					to=interceptData.serverInfo.name,
 					toFormat = toFormat
