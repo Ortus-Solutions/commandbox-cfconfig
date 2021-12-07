@@ -12,6 +12,7 @@ component {
 	}
 		
 	function onServerInstall( interceptData ) {
+		interceptData.serverInfo.multiContext = interceptData.serverInfo.multiContext ?: false;
 		interceptData.serverInfo.verbose = interceptData.serverInfo.verbose ?: interceptData.serverInfo.debug;
 		
 		var en = interceptData.installDetails.engineName;
@@ -197,7 +198,7 @@ component {
 														
 						}
 
-						if( directoryExists( previousWebContext ) ) {
+						if( directoryExists( previousWebContext ) && !interceptData.serverInfo.multiContext ) {
 								
 							if( interceptData.serverInfo.verbose ) {
 								logDebug( 'Copying from [#previousWebContext#] to [#newWebContext#]' );
@@ -240,6 +241,10 @@ component {
 					var name = right( name, len( name ) - 7 );	
 				}
 				name = name.replace( '_', '.', 'all' );
+			
+				if( interceptData.serverInfo.multiContext && toFormat contains 'web' ) {
+					return;
+				}
 			
 				if( interceptData.serverInfo.verbose ) {
 					logDebug( 'Setting #title# [#envVar#] into #toFormat#' );
@@ -346,45 +351,48 @@ component {
 				}
 			} // end server context check
 			
-			var thisFormat = ( en contains 'lucee' ? 'lucee' : 'railo' ) & 'web';
-			var fromDetails = Util.resolveServerDetails( interceptData.serverInfo.name, thisFormat, 'from' );
-			var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version ).setCFHomePath( fromDetails.path );
-			var currentWebSettings = {};
-			if( oConfig.CFHomePathExists() ) {
-				currentWebSettings = oConfig.read().getMemento();	
-			}
-			
-			if( !len( currentWebSettings.adminPassword ?: '' ) && !len( currentWebSettings.hspw ?: '' ) && !len( currentWebSettings.pw ?: '' ) ) {
-				if( len( previousAdminPassPlain ) ) {
-					logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
-					command( 'cfconfig set' )
-						.params( 
-							to=interceptData.serverInfo.name,
-							toFormat=thisFormat,
-							append = true,
-							adminPassword = previousAdminPassPlain 
-						).run();
-				} else if( len( previousAdminPassHashed ) && len( previousAdminPassSalt ) ) {
-					logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
-					command( 'cfconfig set' )
-						.params( 
-							to=interceptData.serverInfo.name,
-							toFormat=thisFormat,
-							append = true,
-							hspw = previousAdminPassHashed,
-							adminSalt = previousAdminPassSalt 
-						).run();
-				} else if( (interceptData.serverInfo.profile ?: '') == 'production' ) {					
-					logWarn( 'No Web context admin password found and profile is production. Setting your admin password to [#randomPass#]' );				 	
-					command( 'cfconfig set' )
-						.params( 
-							to=interceptData.serverInfo.name,
-							toFormat=thisFormat,
-							append = true,
-							adminPassword = randomPass 
-						).run();
+			if( !interceptData.serverInfo.multiContext ) {
+				
+				var thisFormat = ( en contains 'lucee' ? 'lucee' : 'railo' ) & 'web';
+				var fromDetails = Util.resolveServerDetails( interceptData.serverInfo.name, thisFormat, 'from' );
+				var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version ).setCFHomePath( fromDetails.path );
+				var currentWebSettings = {};
+				if( oConfig.CFHomePathExists() ) {
+					currentWebSettings = oConfig.read().getMemento();	
 				}
-			} // end webcontext check
+				
+				if( !len( currentWebSettings.adminPassword ?: '' ) && !len( currentWebSettings.hspw ?: '' ) && !len( currentWebSettings.pw ?: '' ) ) {
+					if( len( previousAdminPassPlain ) ) {
+						logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
+						command( 'cfconfig set' )
+							.params( 
+								to=interceptData.serverInfo.name,
+								toFormat=thisFormat,
+								append = true,
+								adminPassword = previousAdminPassPlain 
+							).run();
+					} else if( len( previousAdminPassHashed ) && len( previousAdminPassSalt ) ) {
+						logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
+						command( 'cfconfig set' )
+							.params( 
+								to=interceptData.serverInfo.name,
+								toFormat=thisFormat,
+								append = true,
+								hspw = previousAdminPassHashed,
+								adminSalt = previousAdminPassSalt 
+							).run();
+					} else if( (interceptData.serverInfo.profile ?: '') == 'production' ) {					
+						logWarn( 'No Web context admin password found and profile is production. Setting your admin password to [#randomPass#]' );				 	
+						command( 'cfconfig set' )
+							.params( 
+								to=interceptData.serverInfo.name,
+								toFormat=thisFormat,
+								append = true,
+								adminPassword = randomPass 
+							).run();
+					}
+				} // end webcontext check
+			}
 			
 		} // end what engine?
 		
@@ -451,6 +459,12 @@ component {
 	
 	private function addConfigFile( interceptData, context='', CFConfigFiles, thisFile, foundLocation ) {
 		var thisFormat = createFormat( interceptData, context );
+		
+		// Ignore all 'web' conventions now for multi-context
+		if( interceptData.serverInfo.multiContext && thisFormat contains 'web' ) {
+			return;
+		}
+		
 		CFConfigFiles[ thisFormat ] = CFConfigFiles[ thisFormat ] ?: [];
 		CFConfigFiles[ thisFormat ].append( thisFile );
 		
