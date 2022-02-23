@@ -1,8 +1,8 @@
 {
     "name":"CFConfig CLI",
-    "version":"1.6.8",
+    "version":"1.6.9",
     "author":"Brad Wood",
-    "location":"Ortus-Solutions/commandbox-cfconfig#v1.6.8",
+    "location":"Ortus-Solutions/commandbox-cfconfig#v1.6.9",
     "homepage":"https://github.com/Ortus-Solutions/commandbox-cfconfig",
     "slug":"commandbox-cfconfig",
     "shortDescription":"A CLI library for importing, exporting, transferring, and otherwise managing CF engine configuration.",
