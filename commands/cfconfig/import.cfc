@@ -148,7 +148,7 @@ component {
 			error( e.message, e.detail ?: '' );
 		}
 		
-		print.greenLine( 'Config transferred!' );
+		print.greenLine( 'Config transferred from #fromDetails.path#!' );
 		
 		/* command( 'cfconfig transfer' )
 			.params( argumentCollection = arguments )
