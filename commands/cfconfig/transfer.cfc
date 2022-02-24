@@ -180,7 +180,7 @@ component {
 			
 			CFConfigService.transfer(
 				from				= fromDetails.path,
-				to					= toDetails.path,
+				to				= toDetails.path,
 				fromFormat			= fromDetails.format,
 				toFormat			= toDetails.format,
 				fromVersion			= fromDetails.version,
@@ -199,7 +199,7 @@ component {
 			error( e.message, e.detail ?: '' );
 		}
 		
-		print.greenLine( 'Config transferred!' );
+		print.greenLine( 'Config transferred from #fromDetails.path# to #toDetails.path#!' );
 	}
 
 	function propertyComplete() {
