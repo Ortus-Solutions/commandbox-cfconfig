@@ -586,13 +586,13 @@ component {
 		if( !results.CFConfigFiles.keyExists( createFormat( interceptData, 'server' ) ) && fileExists( conventionLocation ) ) {
 				addConfigFile( interceptData, 'server', results.CFConfigFiles, conventionLocation, '".cfconfig.json" file in web root by convention' );
 		}
-		// We only look for a .cfconfig-server.json file by convention if we already haven't found any JSON for railo or the lucee web context
-		if( !results.CFConfigFiles.keyExists( createFormat( interceptData, 'web' ) ) && fileExists( conventionLocationWeb ) ) {
-			addConfigFile( interceptData, 'web', results.CFConfigFiles, conventionLocationWeb, '".cfconfig-web.json" file in web root by convention' );	
-		}
 		// We only look for a .cfconfig-web.json file by convention if we already haven't found any JSON for railo or the lucee server context
 		if( !results.CFConfigFiles.keyExists( createFormat( interceptData, 'server' ) ) && fileExists( conventionLocationServer ) ) {
 			addConfigFile( interceptData, 'server', results.CFConfigFiles, conventionLocationServer, '".cfconfig-server.json" file in web root by convention' );	
+		}
+		// We only look for a .cfconfig-server.json file by convention if we already haven't found any JSON for railo or the lucee web context
+		if( !results.CFConfigFiles.keyExists( createFormat( interceptData, 'web' ) ) && fileExists( conventionLocationWeb ) ) {
+			addConfigFile( interceptData, 'web', results.CFConfigFiles, conventionLocationWeb, '".cfconfig-web.json" file in web root by convention' );	
 		}
 			
 		return results;		
