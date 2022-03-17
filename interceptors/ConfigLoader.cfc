@@ -227,7 +227,8 @@ component {
 
 		// Look for individual CFConfig settings to import.
 		var system = createObject( 'java', 'java.lang.System' );
-		
+		// Gatter the settings here first, then import all at once.
+		var settingsToImport = {};
 		var processVarsUDF = function( envVar, value, title ) {
 			// Loop over any that look like cfconfig_xxx
 			if( envVar.len() > 9 && ( left( envVar, 9 ) == 'cfconfig_' || left( envVar, 9 ) == 'cfconfig.' ) ) {
@@ -245,23 +246,14 @@ component {
 				if( interceptData.serverInfo.multiContext && toFormat contains 'web' ) {
 					return;
 				}
-			
+				
 				if( interceptData.serverInfo.verbose ) {
-					logDebug( 'Setting #title# [#envVar#] into #toFormat#' );
+					logDebug( 'Found #title# [#envVar#]' );
 				}
+				
+				settingsToImport[ toFormat ] = settingsToImport[ toFormat ] ?: {};
+				getInstance( 'JSONService' ).set( settingsToImport[ toFormat ], { '#name#' : value }, true );
 
-				var params = {
-					to=interceptData.serverInfo.name,
-					toFormat = toFormat
-				};
-				params[ name ] = value;
-				params.append = true;
-				
-				command( 'cfconfig set' )
-					.params( argumentCollection=params )
-					.run();
-				
-				
 				if( name == 'adminPassword' ) {
 					previousAdminPassPlain = value;
 				}
@@ -295,6 +287,29 @@ component {
 				processVarsUDF( envVar, envVars[ envVar ], 'box environment variable' );
 			}	
 		}
+		
+		// Now that we've collected all the env vars from above, let's import them en masse
+		// We do them together so, for example, an entire datasoruce could be specified across 
+		// a handful of env vars, but the entire thing would be saved at once.
+		// Loop over each unique format being imported
+		settingsToImport.each( (toFormat,formatSettings)=>{	
+			if( interceptData.serverInfo.verbose ) {
+				logDebug( 'Importing into [#toFormat#]...' );
+			}
+			var params = {
+				to=interceptData.serverInfo.name,
+				toFormat = toFormat
+			};
+			params.append = true;
+			formatSettings.each( (settingName,settingValue)=>{
+				params[settingName]=isSimpleValue( settingValue ) ? settingValue : serializeJSON( settingValue );
+			} );
+			
+			command( 'cfconfig set' )
+				.params( argumentCollection=params )
+				.run();						
+		} );
+
 		
 		var util = application.wirebox.getInstance( 'util@commandbox-cfconfig' );
 		// Check for missing passwords
