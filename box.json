@@ -1,29 +1,24 @@
 {
-    "name":"CFConfig CLI",
-    "version":"1.7.0",
-    "author":"Brad Wood",
-    "location":"Ortus-Solutions/commandbox-cfconfig#v1.7.0",
-    "homepage":"https://github.com/Ortus-Solutions/commandbox-cfconfig",
-    "slug":"commandbox-cfconfig",
-    "shortDescription":"A CLI library for importing, exporting, transferring, and otherwise managing CF engine configuration.",
-    "type":"commandbox-modules",
-    "keywords":"ColdFusion,Lucee,Railo,CFML,config",
-    "projectURL":"https://github.com/Ortus-Solutions/commandbox-cfconfig",
-    "scripts":{
-        "postVersion":"package set location='Ortus-Solutions/commandbox-cfconfig#v`package version`'",
-        "onRelease":"publish",
-        "postPublish":"!git push --follow-tags",
-        "install":"install ID=C:\\Users\\Brad.development\\Documents\\GitHub\\commandbox-cfconfig directory=\"D:\\.Command Box\\cfml\\modules\" --force && r"
-    },
-    "ignore":[
-        "**/.*",
-        "test",
-        "tests"
-    ],
-    "dependencies":{
-        "cfconfig-services":"be"
-    },
-    "installPaths":{
-        "cfconfig-services":"modules\\cfconfig-services"
-    }
+  "name": "CFConfig CLI",
+  "version": "1.7.1",
+  "author": "Brad Wood",
+  "location": "ForgeboxStorage",
+  "homepage": "https://github.com/Ortus-Solutions/commandbox-cfconfig",
+  "slug": "commandbox-cfconfig",
+  "shortDescription": "A CLI library for importing, exporting, transferring, and otherwise managing CF engine configuration.",
+  "type": "commandbox-modules",
+  "keywords": "ColdFusion,Lucee,Railo,CFML,config",
+  "projectURL": "https://github.com/Ortus-Solutions/commandbox-cfconfig",
+  "scripts": {
+    "onRelease": "publish",
+    "postPublish": "!git push --follow-tags",
+    "install": "install ID=C:\\Users\\Brad.development\\Documents\\GitHub\\commandbox-cfconfig directory=\"D:\\.Command Box\\cfml\\modules\" --force && r"
+  },
+  "ignore": ["**/.*", "test", "tests"],
+  "dependencies": {
+    "cfconfig-services": "be"
+  },
+  "installPaths": {
+    "cfconfig-services": "modules\\cfconfig-services"
+  }
 }
