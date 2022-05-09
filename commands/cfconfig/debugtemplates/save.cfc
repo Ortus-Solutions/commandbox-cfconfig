@@ -1,11 +1,11 @@
 /**
-* Add a new Debug Template or update an existing cache.  Existing caches will be matched based on the name.
+* Add a new Debug Template or update an existing one.  Existing debug templates will be matched based on the name.
 * 
 * You can use a the "type" parameter as a shortcut for the debug template
 * 
 * {code}
-* cfconfig debugtemplates save myDebugTemplate lucee-modern
-* cfconfig debugtemplates save name=myDebugTemplate type=lucee-modern
+* cfconfig debugtemplates save myDebugTemplate Modern
+* cfconfig debugtemplates save label=myDebugTemplate type=Modern
 * {code}
 * 
 * 
@@ -13,7 +13,7 @@
 * command prefixed with the text "custom:". This requires named parameters, of course.
 * 
 * {code}
-* cfconfig debugtemplates save name=myDebugTemplate type=lucee-modern custom:tab_Reference=Enabled custom:colorHighlight=Enable
+* cfconfig debugtemplates save label=myDebugTemplate type=Modern custom:tab_Reference=Enabled custom:colorHighlight=Enable
 * {code}
 */
 component {
@@ -24,11 +24,11 @@ component {
 	
 	/**
 	* @label Custom name of this template
-	* @type Type of debugging template e.g: lucee-modern
-	*  - lucee-classic
-	*  - lucee-comment
-	*  - lucee-modern
-	*  - lucee-simple
+	* @type Type of debugging template e.g: Modern
+	*  - Classic
+	*  - Comment
+	*  - Modern
+	*  - Simple
 	* @iprange A comma separated list of strings of ip definitions
 	* @fullname CFC invocation path to the component that declares the fields for this template (defaulted for known types)
 	* @path File system path to component that declares the fields for this template (defaulted for known types)
@@ -42,10 +42,10 @@ component {
 	function run(
 		required string label,
 		required string type,
-		string id,
-		string fullname,
 		string iprange,
+		string fullname,
 		string path,
+		string id,
 		struct custom			
 		string to,
 		string toFormat
@@ -54,7 +54,7 @@ component {
 		var toFormat = arguments.toFormat ?: '';
 		
 		if( !( type ?: '' ).len() ) {
-			error( 'Please define a type of debugging template either a "type" (lucee-classic, lucee-comment, lucee-modern, lucee-simple)' );
+			error( 'Please define a type of debugging template either a "type" (Classic, Comment, Modern, Simple)' );
 		}
 
 		try {
@@ -70,7 +70,7 @@ component {
 		// Read existing config
 		var oConfig = CFConfigService.determineProvider( toDetails.format, toDetails.version );
 		try {
-			oConfig.read( toDetails.path );	
+			oConfig.read( toDetails.path );
 		} catch( any e ) {
 			// Handle this better by specifically checking if there's config 
 		}
@@ -80,9 +80,13 @@ component {
 		templateParams.delete( 'to' );
 		templateParams.delete( 'toFormat' );
 		
-		// Add cache to config and save.
-		oConfig.addDebuggingTemplate( argumentCollection = templateParams )
-			.write( toDetails.path );
+		try {
+			// Add debug template to config and save.
+			oConfig.addDebuggingTemplate( argumentCollection = templateParams )
+				.write( toDetails.path );
+		} catch( cfconfigException e ) {
+			error( e.message, e.datail ); 
+		}
 				
 		print.greenLine( 'Debug template [#label#] saved.' );		
 	}
