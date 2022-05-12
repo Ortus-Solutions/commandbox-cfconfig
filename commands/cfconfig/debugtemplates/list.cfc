@@ -72,19 +72,14 @@ component {
 				for( var template in DebuggingTemplates ) {
 					var templateDetails = DebuggingTemplates[ template ];
 					// The only guaranteed piece of info is name
-					print.boldLine( 'Name: #template#' );
-					
-					if( !isNull( templateDetails.type ) ) {
-						print.indentedLine( 'Type: #templateDetails.type#' );
-						print.indentedLine( 'Path: #templateDetails.path#' );
+					print.boldLine( 'Name: #template#' )
+						.indentedLine( 'Type: #templateDetails.type#' );
+						
+					if( !isNull( templateDetails.iprange ) ) {
+						print.indentedLine( 'IP Range: #templateDetails.iprange#' );
 					}
-					// else if( !isNull( cacheDetails.class ) ) {
-					// 	print.indentedLine( 'Class: #cacheDetails.class#' );
-					// }
-					
-					// if( !isNull( cacheDetails.storage ) ) { print.indentedLine( 'Storage: #yesNoFormat( cacheDetails.storage )#' ); }
 											
-				print.line();
+					print.line();
 				}
 			} else {
 				print.line( 'No Debugging Templates defined.' );				

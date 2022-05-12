@@ -45,8 +45,6 @@ component {
 		// Get the caches and remove the requested one
 		var templates = oConfig.getDebuggingTemplates() ?: {};
 		templates.delete( label );	
-
-		print.redLine(templates);
 		
 		// Set remaining caches back and save
 		oConfig.setDebuggingTemplates( templates )
