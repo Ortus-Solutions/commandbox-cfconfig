@@ -214,3 +214,38 @@ If you notice a missing feature, please send a pull request or enter a ticket so
 
 And remember, this project is just the CLI component. If you'd like to build a custom process of managing your server's config, the entire service layer is available as a separate project, which can operate outside of CommandBox. https://www.forgebox.io/view/cfconfig-services
 
+ 
+## Contributing 
+
+To run the changes you have implemnted in the `config` project via commandbox you need to follow the following steps:
+
+- Uninstall your local `commandbox-cfconfig` package via:
+
+   `package uninstall commandbox-cfconfig --system`
+
+- clone both `commandbox-cfconfig` and `cfconfig` services repos:
+
+   ```
+      git clone git@github.com:Ortus-Solutions/cfconfig.git
+      git clone git@github.com:Ortus-Solutions/commandbox-cfconfig.git
+   ```
+- run `box install` inside the CFConfig services repo ONLY to get its dependencies
+   
+   ```
+      box
+      cd cfconfig
+      install
+      cd ..
+   ```
+- `box package link` the `cfconfig` services repo to your commandbox core directly:
+
+   ```
+      cd cfconfig
+      package link
+   ```
+- `box package link` the `commandbox-cfconfig` to your commandbox core:
+   ```
+      cd ..
+      cd commandbox-cfconfig
+      package link
+- Now I can make changes in either repo, run the `reload` command and then test your changes right away.
