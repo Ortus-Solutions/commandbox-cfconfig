@@ -4,7 +4,7 @@
 * {code}
 * cfconfig componentpath list
 * cfconfig componentpath list from=serverName
-* cfconfig componentpath list from==/path/to/server/home
+* cfconfig componentpath list from=/path/to/server/home
 * {code}
 * 
 * To receive the data back as JSON, use the --JSON flag.
@@ -74,11 +74,10 @@ component {
 					var componentpath = componentpaths[path];
 
 					print.indentedLine( 'Name: #path#' );
-					if( !isNull( componentpath.physical ) ) { print.indentedLine( 'Physical Path: #componentpath.physical#' ); }
-					if( !isNull( componentpath.archive ) ) { print.indentedLine( 'Archive Path: #componentpath.archive#' ); }
+					if( !isNull( componentpath.physical ) && len( componentpath.physical ) ) { print.indentedLine( 'Physical Path: #componentpath.physical#' ); }
+					if( !isNull( componentpath.archive ) && len( componentpath.archive ) ) { print.indentedLine( 'Archive Path: #componentpath.archive#' ); }
 					if( !isNull( componentpath.primary ) ) { print.indentedLine( 'Primary: #componentpath.primary#' ); }
-					if( !isNull( componentpath.inspectTemplate ) ) { print.indentedLine( 'Inspect Template: #componentpath.inspectTemplate#' ); }
-					if( !isNull( componentpath.readonly ) ) { print.indentedLine( 'Read Only: #componentpath.readOnly#' ); }
+					if( !isNull( componentpath.inspectTemplate ) ) { print.indentedLine( 'Inspect Template: #len( componentpath.inspectTemplate ) ? componentpath.inspectTemplate : 'inherit'#' ); }
 					print.line();
 				}
 				

@@ -15,26 +15,24 @@ component {
 	property name="serverService" inject="ServerService";
 	
 	/**
-	* @name The name of the path component path
+	* @name The name of the component path
 	* @physical The physical path that the engine should search
 	* @archive Path to the Lucee/Railo archive
-	* @inspectTemplate String containing one of "never", "once", "always", "" (inherit)
+	* @inspectTemplate String containing one of "never", "once", "always", "inherit"
 	* @inspectTemplate.options never,once,always
-	* @primary Strings containing one of "physical", "archive"
-	* @primary.options physical,archive
-	* @readonly true/false
+	* @primary Strings containing one of "resource", "archive"
+	* @primary.options resource,archive
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
 	* @toFormat The format to write to. Ex: LuceeServer@5
 	*/	
 	function run(
-		string name,
-		string physical="",
-		string archive="",
+		required string name,
+		string physical,
+		string archive,
 		string inspectTemplate,
 		string primary,
-		boolean readonly=false,
 		string to,
 		string toFormat
 	) {		
@@ -51,7 +49,7 @@ component {
 			error( "The location for the server couldn't be determined.  Please check your spelling." );
 		}
 
-		if( !Len( physical ) && !Len( archive ) ) {
+		if( !len( physical ?: '' ) && !len( archive ?: '' ) ) {
 			error( "You must specify a physical or archive location. (or both)" );
 		}
 				
