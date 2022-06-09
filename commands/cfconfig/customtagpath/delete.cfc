@@ -37,7 +37,7 @@ component {
 		string inspectTemplate,
 		string primary,
 		boolean trusted,
-		boolean dryRun = true,
+		boolean dryRun = false,
 		string to,
 		string toFormat
 	) {		
@@ -94,20 +94,21 @@ component {
 				if( !isNull( CustomTagPaths[ i ].primary ) ) { print.indentedLine( 'Primary: #CustomTagPaths[ i ].primary#' ); }
 				if( !isNull( CustomTagPaths[ i ].trusted ) ) { print.indentedLine( 'Read Only: #CustomTagPaths[ i ].trusted#' ); }
 			} else {
-				CustomTagPaths.delete( i );
+				CustomTagPaths.deleteAt( i );
 				i--;
 			}
 			// Index match can only work once, otherwise, we'd keep deleting everything AFTER that point.
 			if( !isNull( index ) ) { break; }
 		}
 		
-		// Set remaining mappings back and save
-		/*
-		oConfig.setCustomTagPaths( CustomTagPaths )
-			.write( toDetails.path );		
-			*/
-			
-		print.greenLine( '#deleted# Custom Tag' & ( deleted eq 1 ? "" : "s" ) & ' ' & ( dryRun ? "would be ":"" ) & 'deleted.' );
+		if( !dryRun ) {
+			// Set remaining mappings back and save
+			oConfig.setCustomTagPaths( CustomTagPaths )
+				.write( toDetails.path );
+				
+			print.greenLine( '#deleted# Custom Tag' & ( deleted eq 1 ? "" : "s" ) & ' ' & ( dryRun ? "would be ":"" ) & 'deleted.' );
+		}		
+	
 	}
 	
 	function serverNameComplete() {
