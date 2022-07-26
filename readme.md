@@ -1,10 +1,10 @@
 ```
-   ____ _____ ____             __ _          ____ _     ___ 
+   ____ _____ ____             __ _          ____ _     ___
   / ___|  ___/ ___|___  _ __  / _(_) __ _   / ___| |   |_ _|
- | |   | |_ | |   / _ \| '_ \| |_| |/ _` | | |   | |    | | 
- | |___|  _|| |__| (_) | | | |  _| | (_| | | |___| |___ | | 
+ | |   | |_ | |   / _ \| '_ \| |_| |/ _` | | |   | |    | |
+ | |___|  _|| |__| (_) | | | |  _| | (_| | | |___| |___ | |
   \____|_|   \____\___/|_| |_|_| |_|\__, |  \____|_____|___|
-                                    |___/                   
+                                    |___/
 ```
 
 <img src="https://www.ortussolutions.com/__media/logos/CfConfigLogo300.png" class="img-thumbnail"/>
@@ -24,7 +24,7 @@ https://cfconfig.ortusbooks.com
 1. Generic JSON storage of any CF engine's settings
 2. Engine-specific providers for all major engines to convert their config to and from the generic JSON format
 
-This does not use RDS and doesn't need the server to be running.  It just needs access to the installation folder for a server to locate its config files.  You will need to restart the server for the change to take effect unless you have configured the server to scan it's config files for changes. 
+This does not use RDS and doesn't need the server to be running.  It just needs access to the installation folder for a server to locate its config files.  You will need to restart the server for the change to take effect unless you have configured the server to scan it's config files for changes.
 
 ## Uses
 
@@ -214,8 +214,8 @@ If you notice a missing feature, please send a pull request or enter a ticket so
 
 And remember, this project is just the CLI component. If you'd like to build a custom process of managing your server's config, the entire service layer is available as a separate project, which can operate outside of CommandBox. https://www.forgebox.io/view/cfconfig-services
 
- 
-## Contributing 
+
+## Contributing
 
 To run the changes you have implemnted in the `config` project via commandbox you need to follow the following steps:
 
@@ -230,7 +230,7 @@ To run the changes you have implemnted in the `config` project via commandbox yo
       git clone git@github.com:Ortus-Solutions/commandbox-cfconfig.git
    ```
 - run `box install` inside the CFConfig services repo ONLY to get its dependencies
-   
+
    ```
       box
       cd cfconfig
