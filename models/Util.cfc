@@ -59,8 +59,49 @@ component singleton {
 				results.path = serverInfo.serverConfigDir & '/lucee-server';
 			} else if ( results.format == 'railoServer' ) {
 				results.path = serverInfo.serverConfigDir & '/railo-server';
-			} else if ( results.format == 'railoWeb' || results.format == 'luceeWeb' ) {
-				results.path = serverInfo.webConfigDir;
+			// Web root can be provided as luceeWeb-/path/to/webroot
+			} else if ( (var webrootSearch = reFindNoCase( '^(lucee|railo)Web(-(.*))?', results.format, 1, true ) ).pos[1] ) {
+				// Strip web root from format
+				results.format = listFirst( results.format, '-' );
+
+				// Crappy workaround for CommandBox bug where this logic is being done on the fly, but not saved back into the serverInfo struct!
+				if( serverInfo.multiContext && not serverInfo.webConfigDir contains '{web-root-directory}' && not serverInfo.webConfigDir contains '{web-context-hash}'  ) {
+					serverInfo.webConfigDir &= '-{web-context-hash}'
+				}
+
+				// Web context has Lucee placeholders
+				if( serverInfo.webConfigDir.find( '{' ) ) {
+					// If no web root was provided, use the default web root
+					var webroot = serverInfo.webroot;
+					// Otherwise, extract it from the format
+					if( webrootSearch.pos.len() == 4 && webrootSearch.pos[4] ) {
+						webroot = webrootSearch.match[4];
+					}
+
+					// This will create the same canonicalized path that Lucee uses to hash, which includes
+					// OS-specific slashes and no trailing slash.
+					webroot = createObject( 'java', 'java.io.File' ).init( webroot ).toString();
+
+					// Replace common placeholders we know how to handle
+					results.path = serverInfo.webConfigDir
+						.replaceNoCase( '{web-root-directory}', webroot, 'all' )
+						.replaceNoCase( '{web-context-hash}', lCase( hash( webroot ) ), 'all' );
+
+					// If there are still placeholders, we fail
+					if( results.path.find( '{' ) ) {
+						throw(
+							message="CFConfig couldn't find the CF web context for CommandBox server [#serverInfo.name#], it contains a placeholder we don't know how to resolve.",
+							detail="The web context directory is [#serverInfo.webConfigDir#]",
+							type="cfconfigException"
+						);
+					}
+
+				// Web context is just plain absolute path
+				} else {
+					results.path = serverInfo.webConfigDir;
+				}
+
+
 			}
 
 			// Lucee can have a relative web or server context path.  It's relative to the server home directory
