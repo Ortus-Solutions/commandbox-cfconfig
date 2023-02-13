@@ -1,22 +1,22 @@
 /**
 * Diff all configuration between to locations. A location can be a CommandBox server (by name), a directory
 * that points to a server home, or a CF Config JSON file.
-* 
+*
 * {code:bash}
 * cfconfig diff server1 server2
 * cfconfig diff file1.json file2.json
 * cfconfig diff servername file.json
-* cfconfig diff from=path/to/servers1/home to=path/to/server2/home 
+* cfconfig diff from=path/to/servers1/home to=path/to/server2/home
 * {code}
 *
 * Both the "to" or the "from" parameters will default to the CommandBox server in the current working directory
 * but you need to at least specicy one of them to be different.  To easily compare the CommandBox server in your CWD
 * you can just specify one alternative location to compare with
-* 
+*
 * {code:bash}
-* cfconfig diff to=path/to/.CFConfig.json 
+* cfconfig diff to=path/to/.CFConfig.json
 * {code}
-* 
+*
 * CFConfig will guess the to and from format based on the files in the directory.  The toFormat and fromFormat
 * are only needed in case CFConfig can't guess the server formats, or is guessing incorrectly.
 *
@@ -31,13 +31,13 @@
 *
 */
 component {
-	
+
 	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
 	property name='Util' inject='util@commandbox-cfconfig';
 	property name='HTMLReport' inject='HTMLReport@commandbox-cfconfig';
 	property name="serverService" inject="ServerService";
 	property name="ConfigService" inject="ConfigService";
-	
+
 	/**
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @from.optionsFileComplete true
@@ -61,7 +61,7 @@ component {
 	* @toDisplayName The "to" server's display name to use on reports.
 	* @fromDisplayName The "from" server's display name to use on reports.
 	* @emptyIsUndefined True will compare empty strings the same as undefined
-	*/	
+	*/
 	function run(
 		string from,
 		string to,
@@ -86,34 +86,34 @@ component {
 		arguments.to = arguments.to ?: '';
 		arguments.fromFormat = arguments.fromFormat ?: '';
 		arguments.toFormat = arguments.toFormat ?: '';
-		
+
 		// Defaults if the user doesn't specify at least one filter
 		if( !(fromOnly || toOnly || bothPopulated || bothEmpty || valuesMatch || valuesDiffer || all ) ) {
 			fromOnly = true;
 			toOnly = true;
 			bothPopulated = true;
 		}
-		
+
 		if( !from.len() && !to.len() ) {
 			error( "Please specify either a 'from' or a 'to' location.  I'm not sure what to compare." );
 		}
-				
+
 		try {
 			var fromDetails = Util.resolveServerDetails( from, fromFormat, 'from' );
 			var toDetails = Util.resolveServerDetails( to, toFormat, 'to' );
-			
+
 			if( !fromDetails.path.len() ) {
 				error( "The location for the 'from' server couldn't be determined.  Please check your spelling." );
 			}
-			
+
 			if( !directoryExists( fromDetails.path ) && !fileExists( fromDetails.path ) ) {
-				error( "The CF Home directory for the 'from' server doesn't exist.  [#fromDetails.path#]" );				
+				error( "The CF Home directory for the 'from' server doesn't exist.  [#fromDetails.path#]" );
 			}
-			
+
 			if( !toDetails.path.len() ) {
 				error( "The location for the 'to' server couldn't be determined.  Please check your spelling." );
 			}
-			
+
 			var qryDiff = CFConfigService.diff(
 				from				= fromDetails.path,
 				to					= toDetails.path,
@@ -123,19 +123,19 @@ component {
 				toVersion			= toDetails.version,
 				emptyIsUndefined	= emptyIsUndefined
 			);
-			
-			qryDiff = queryExecute( 
+
+			qryDiff = queryExecute(
 				'SELECT * FROM qryDiff ORDER BY propertyName',
 				{},
 				{ dbtype='query' }
 			 );
-			
+
 		} catch( cfconfigException var e ) {
 			error( e.message, e.detail ?: '' );
 		} catch( cfconfigNoProviderFound var e ) {
 			error( e.message, e.detail ?: '' );
 		}
-			
+
 		// SQL for main filtering
 		var sql = 'SELECT *
 			FROM qryDiff
@@ -147,17 +147,19 @@ component {
 			& ( valuesMatch ? ' OR valuesMatch = 1 ' : '' )
 			& ( valuesDiffer ? ' OR valuesDiffer = 1 ' : '' )
 			& ( all ? ' OR 1 = 1 ' : '' )
+			& 'ORDER BY propertyName'
 		var qryDiffFiltered =  queryExecute( sql, [], { dbtype : 'query' } );
-		
+
 		// If not verbose, filter out nested items
 		if( !verbose ) {
 			var sql2 = "SELECT *
 				FROM qryDiffFiltered
-				WHERE propertyName NOT LIKE '%-%-%' ";
-			qryDiffFiltered =  queryExecute( sql2, [], { dbtype : 'query' } );
+				WHERE propertyName NOT LIKE '%-%-%'
+				ORDER BY propertyName ";
+			qryDiffFiltered = queryExecute( sql2, [], { dbtype : 'query' } );
 		}
-		
-		
+
+
 		if( HTMLReportPath.len() ) {
 			var writtenTo = HTMLReport.generateReport( qryDiffFiltered, fileSystemUtil.resolvepath( HTMLReportPath ), fromDetails, toDetails, arguments );
 			if( !JSON ) {
@@ -165,93 +167,68 @@ component {
 			}
 		}
 		if( PDFReportPath.len() ) {
-			
+
 			if( !getTagList().cf.keyExists( 'document' ) ) {
 				error( "PDF Extension isn't installed.  Cannot create PDF." );
 			}
-			
-			// "Hiding" this CFC from WireBox so Lucee doesn't complain if the PDF extension isn't loaded.			
+
+			// "Hiding" this CFC from WireBox so Lucee doesn't complain if the PDF extension isn't loaded.
 			var PDFReport = getInstance( 'commandbox-cfconfig.modelsExt.PDFReport' );
-			
+
 			var writtenTo = PDFReport.generateReport( qryDiffFiltered, fileSystemUtil.resolvepath( PDFReportPath ), fromDetails, toDetails, arguments );
 			if( !JSON ) {
 				print.greenLine( 'PDF Report written to [#writtenTo#]' );
 			}
 		}
-		
+
 		if( JSON ) {
-					
+
 			// Detect if this installed version of CommandBox can handle automatic JSON formatting (and coloring)
 			if( configService.getPossibleConfigSettings().findNoCase( 'JSON.ANSIColors.constant' ) ) {
 				print.line( deserializeJSON( serializeJSON( qryDiffFiltered, 'struct' ) ) );
 			} else {
-				print.line( formatterUtil.formatJSON( serializeJSON( qryDiffFiltered, 'struct' ) ) );	
+				print.line( formatterUtil.formatJSON( serializeJSON( qryDiffFiltered, 'struct' ) ) );
 			}
-			
+
 			return;
 		}
-		
-		var longestProp = 2 + qryDiff.reduce( function( prev=0, row ) { 
-			return ( row.propertyName.len() > prev ? row.propertyName.len() : prev );
+
+		var longestProp = 2 + qryDiff.reduce( function( prev=0, row ) {
+			var thislen = row.propertyName.listLast( '-' ).len() + ( (row.propertyName.listLen( '-' )-1)*2 );
+			return ( thislen > prev ? thislen : prev );
 		} );
-		var longestToValue = 2 + qryDiff.reduce( function( prev=0, row ) { 
+		var longestToValue = 2 + qryDiff.reduce( function( prev=0, row ) {
 			return ( len( row.toValue ) > prev ? len( row.toValue ) : prev );
 		} );
-		var longestFromValue = 2 + qryDiff.reduce( function( prev=0, row ) { 
+		var longestFromValue = 2 + qryDiff.reduce( function( prev=0, row ) {
 			return ( len( row.fromValue ) > prev ? len( row.fromValue ) : prev );
 		} );
-		
+
 		// Terminal width (minus 2 for good measure)
 		var termWidth = shell.getTermWidth()-2;
 		// column with (minus 6 for center column and minus longest property name)
 		var columnWidth = ( termWidth -6-longestProp )/2;
-		
+
 		toColumnWidth = min( columnWidth, longestToValue );
 		fromColumnWidth = min( columnWidth, longestFromValue );
-		
+
 		print
 			.line()
-			.boldUnderscoredLine( 
-				printColumnValue( 'Property Name', longestProp ) 
+			.boldUnderscoredLine(
+				printColumnValue( 'Property Name', longestProp )
 				& printColumnValue( FromDisplayName ?: '"From" Server ', fromColumnWidth )
 				& '      '
 				& printColumnValue( toDisplayName  ?: '"To" Server', toColumnWidth ) );
-	
+
 		var previousPrefix = '~';
 		// propertyName,fromValue,toValue,fromOnly,toOnly,bothPopulated,bothEmpty,valuesMatch,valuesDiffer
 		for( var row in qryDiff ) {
-			if( row.propertyName.startsWith( previousPrefix )
-				&& ( 
-					row.propertyName.startsWith( 'CFMappings-' ) 
-					|| row.propertyName.startsWith( 'datasources-' ) 
-					|| row.propertyName.startsWith( 'mailServers-' ) 
-					|| row.propertyName.startsWith( 'logFilesDisabled-' )
-					|| row.propertyName.startsWith( 'PDFServiceManagers-' )
-					|| row.propertyName.startsWith( 'caches-' )
-					|| row.propertyName.startsWith( 'clientStorageLocations-' )
-					|| row.propertyName.startsWith( 'loggers-' )
-					|| row.propertyName.startsWith( 'restMappings-' )
-					|| row.propertyName.startsWith( 'scheduledTasks-' )
-					|| row.propertyName.startsWith( 'eventGatewayConfigurations-' )
-					|| row.propertyName.startsWith( 'eventGatewayInstances-' )
-					|| row.propertyName.startsWith( 'PDFServiceManagers-' )
-					|| row.propertyName.startsWith( 'debuggingTemplates-' )
-					|| row.propertyName.startsWith( 'customTagPaths-' )
-					|| row.propertyName.startsWith( 'componentPaths-' )
-					|| row.propertyName.startsWith( 'eventGatewaysLucee-' )
-					) 
-				) {
-				var nested = true;
-				// If not verbose output, skip nested values
-				if( !verbose ) {
-					continue;
-				}
-			} else {
-				var nested = false;
-				previousPrefix = row.propertyName & '-';
+			if( !verbose && row.propertyName.listLen( '-' ) > 2 ) {
+				continue;
 			}
-			
-			if( 
+			var thisName = row.propertyName.listLast( '-' );
+
+			if(
 				( fromOnly && row.fromOnly )
 				|| ( toOnly && row.toOnly )
 				|| ( bothPopulated && row.bothPopulated )
@@ -260,7 +237,7 @@ component {
 				|| ( valuesDiffer && row.valuesDiffer )
 				|| all
 				) {
-				
+
 				if( row.valuesMatch ) {
 					var equality = '  ==  ';
 					var lineColor = 'green';
@@ -277,24 +254,20 @@ component {
 					var lineColor = '';
 					var equality = '      ';
 				}
-				
-				if( row.propertyName.startsWith( 'logFilesDisabled-' ) ) {
-					var indent = 1;
-				} else {
-					var indent = reReplace( row.propertyName, '[^-]', '', 'all' ).len()-1;
-				}
-				print.line( 
-					printColumnValue( ( nested ? repeatString( '  ', indent ) : '' ) & row.propertyName & ': ', longestProp )
-					& printColumnValue( ( row.toOnly || row.bothEmpty ? '-' : row.FromValue ), fromColumnWidth )
+
+				var indent = row.propertyName.listLen('-')-1;
+				print.line(
+					printColumnValue( repeatString( '  ', indent ) & thisName & ': ', longestProp )
+					& printColumnValue( ( !row.complex ? ( row.toOnly || row.bothEmpty ? '-' : row.FromValue ) : '' ), fromColumnWidth )
 					& equality
-					& printColumnValue( ( row.fromOnly || row.bothEmpty ? '-' : row.toValue ), toColumnWidth ),
+					& printColumnValue( ( !row.complex ? ( row.fromOnly || row.bothEmpty ? '-' : row.toValue ) : '' ), toColumnWidth ),
 					lineColor
-					
+
 				);
-																
+
 			}
 		}
-		
+
 	}
 
 	/**
@@ -304,10 +277,10 @@ component {
 		if( len( text ) > columnWidth ) {
 			return left( text, columnWidth-3 ) & '...';
 		} else {
-			return text & repeatString( ' ', columnWidth-len( text ) );			
+			return text & repeatString( ' ', columnWidth-len( text ) );
 		}
 	}
-	
+
 	function serverNameComplete() {
 		return serverService
 			.getServerNames()
@@ -315,5 +288,5 @@ component {
 				return { name : i, group : 'Server Names' };
 			} );
 	}
-	
+
 }
