@@ -24,8 +24,6 @@ component singleton {
 			version : '',
 			path : ''
 		};
-		// Backwards compat for people on old CommandBox
-		serverInfo.multiContext = serverInfo.multiContext ?: false;
 
 		// If there's a name, check for a server with that name
 		if( from.len() ) {
@@ -35,6 +33,9 @@ component singleton {
 			var serverDetails = serverService.resolveServerDetails( {} );
 		}
 		var serverInfo = serverDetails.serverInfo;
+
+		// Backwards compat for people on old CommandBox
+		serverInfo.multiContext = serverInfo.multiContext ?: false;
 
 		// If we found a server with this name
 		if( !serverDetails.serverIsNew ) {
