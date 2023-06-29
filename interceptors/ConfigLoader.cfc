@@ -436,6 +436,24 @@ component {
 
 		} // end what engine?
 
+		// If there is a custom Adobe /cf_scripts/scripts path, let CommandBox know about it
+		if( !isNull( currentServerSettings.CFFormScriptDirectory ) && len( currentServerSettings.CFFormScriptDirectory ) && currentServerSettings.CFFormScriptDirectory != '/cf_scripts/scripts/' && isNull( interceptData.serverInfo.adobeScriptsAlias ) ) {
+			if( jobEnabled ) {
+				job.addLog( 'Setting custom CFConfig Adobe cfscripts alias into CommandBox [#currentServerSettings.CFFormScriptDirectory#]' );
+			}
+			interceptData.serverInfo.adobeScriptsAlias = currentServerSettings.CFFormScriptDirectory;
+		} if( !len( currentServerSettings.CFFormScriptDirectory ?: '' ) && !isNull( interceptData.serverInfo.adobeScriptsAlias ) && len( interceptData.serverInfo.adobeScriptsAlias ) && interceptData.serverInfo.adobeScriptsAlias != '/cf_scripts/scripts/' ) {
+			if( jobEnabled ) {
+				job.addLog( 'Setting custom CommandBox Adobe cfscripts alias into CFConfig [#interceptData.serverInfo.adobeScriptsAlias#]' );
+			}
+			command( 'cfconfig set' )
+				.params(
+					to=interceptData.serverInfo.name,
+					append = true,
+					CFFormScriptDirectory = interceptData.serverInfo.adobeScriptsAlias
+				).run();
+		}
+
 		if( jobEnabled ) {
     		job.complete( interceptData.serverInfo.verbose );
 		}
@@ -511,6 +529,23 @@ component {
 
 	private struct function findCFConfigFile( interceptData ) {
 		var serverInfo = interceptData.serverInfo;
+		// Exists for onServerInstall, but not onServerStop
+		if( !isNull( interceptData.serverJSON ) ) {
+			var serverJSON = interceptData.serverJSON;
+		} else {
+			var serverJSON = {};
+			if( serverInfo.keyExists( 'serverConfigFile' )
+				&& serverInfo.serverConfigFile.len()
+				&& fileExists( serverInfo.serverConfigFile ) ) {
+					// Read it in
+					serverJSON = serverService.readServerJSON( serverInfo.serverConfigFile );
+					// And swap out any system settings
+					systemSettings.expandDeepSystemSettings( serverJSON );
+					if( structKeyExists( serverService, 'loadOverrides' ) ) {
+						serverService.loadOverrides( serverJSON, serverInfo )
+					}
+			}
+		}
 
 		var results = {
 			CFConfigFiles = {
@@ -533,20 +568,6 @@ component {
 			var thisFile = systemSettings.getSystemSetting( 'cfconfigserver' );
 			thisFile = fileSystemUtil.resolvePath( thisFile, serverInfo.webroot );
 			addConfigFile( interceptData, 'server', results.CFConfigFiles, thisFile, '"cfconfigserver" environment variable' );
-		}
-
-		// If there is a server.json file for this server
-		var serverJSON = {};
-		if( serverInfo.keyExists( 'serverConfigFile' )
-			&& serverInfo.serverConfigFile.len()
-			&& fileExists( serverInfo.serverConfigFile ) ) {
-				// Read it in
-				serverJSON = serverService.readServerJSON( serverInfo.serverConfigFile );
-				// And swap out any system settings
-				systemSettings.expandDeepSystemSettings( serverJSON );
-				if( structKeyExists( serverService, 'loadOverrides' ) ) {
-					serverService.loadOverrides( serverJSON, serverInfo )
-				}
 		}
 
 		// If there is a CFConfig specified, let's use it.
