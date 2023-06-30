@@ -442,6 +442,7 @@ component {
 				job.addLog( 'Setting custom CFConfig Adobe cfscripts alias into CommandBox [#currentServerSettings.CFFormScriptDirectory#]' );
 			}
 			interceptData.serverInfo.adobeScriptsAlias = currentServerSettings.CFFormScriptDirectory;
+		//If there is a custom script path in CommandBox, it into the server.
 		} if( !len( currentServerSettings.CFFormScriptDirectory ?: '' ) && !isNull( interceptData.serverInfo.adobeScriptsAlias ) && len( interceptData.serverInfo.adobeScriptsAlias ) && interceptData.serverInfo.adobeScriptsAlias != '/cf_scripts/scripts/' ) {
 			if( jobEnabled ) {
 				job.addLog( 'Setting custom CommandBox Adobe cfscripts alias into CFConfig [#interceptData.serverInfo.adobeScriptsAlias#]' );
