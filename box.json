@@ -1,6 +1,6 @@
 {
     "name":"CFConfig CLI",
-    "version":"1.10.6",
+    "version":"1.10.7",
     "author":"Brad Wood",
     "location":"ForgeboxStorage",
     "homepage":"https://github.com/Ortus-Solutions/commandbox-cfconfig",
