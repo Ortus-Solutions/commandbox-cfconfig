@@ -81,7 +81,7 @@ component {
 						}
 
 					} else {
-						logError( 'CFConfig file doesn''t contain valid JSON! [#CFConfigFile#]' );
+						throw( message='CFConfig file doesn''t contain valid JSON! [#CFConfigFile#]', type='CommandException' );
 					}
 
 					firstOfThisFormat = false;
