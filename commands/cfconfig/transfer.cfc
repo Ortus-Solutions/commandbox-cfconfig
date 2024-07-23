@@ -17,6 +17,9 @@
 *
 * For Adobe servers, point to the "cfusion" folder containing the lib/neo-runtime.xml file.
 * Ex: C:/ColdFusion11/cfusion
+*
+* For BoxLang servers, point to the BoxLang home containing the boxlang.json file.
+* Ex: C:/users/brad/.boxlang/config
 * 
 * {code:bash}
 * cfconfig transfer from=/path/to/server/home to=/path/to/another/server/home
@@ -41,6 +44,7 @@
 * - adobe@11.0.11
 * - luceeWeb@5
 * - luceeServer@4.5
+* - boxlang@1
 * 
 * {code:bash}
 * cfconfig transfer from=/path/to/.CFConfig.json to=/path/to/server/home toFormat=luceeServer@5.1

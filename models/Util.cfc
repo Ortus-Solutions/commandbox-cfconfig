@@ -55,7 +55,10 @@ component singleton {
 				results.format = 'railoServer';
 			}
 
-			if( serverInfo.engineName contains 'adobe' ) {
+			if( serverInfo.engineName contains 'boxlang' || serverinfo.CFEngine contains 'boxlang' ) {
+				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/boxlang/config';
+				results.format = 'boxlang';
+			} else if( serverInfo.engineName contains 'adobe' ) {
 				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/cfusion';
 				results.format = 'adobe';
 			} else if ( results.format == 'luceeServer' ) {

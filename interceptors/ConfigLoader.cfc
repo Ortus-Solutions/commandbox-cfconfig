@@ -17,7 +17,7 @@ component {
 
 		var en = interceptData.installDetails.engineName;
 		// Bail right now if this server isn't a CF engine.
-		if( !( en contains 'lucee' || en contains 'railo' || en contains 'adobe' ) ) {
+		if( !( en contains 'lucee' || en contains 'railo' || en contains 'adobe' || en contains 'boxlang' ) ) {
 			return;
 		}
 
@@ -151,7 +151,21 @@ component {
 
 				try {
 
-					if( thisEngine == 'adobe' ) {
+					if( thisEngine == 'boxlang' ) {
+
+						if( interceptData.serverInfo.verbose ) {
+							logDebug( 'Copying from [#previousServerFolder#/WEB-INF/boxlang/config] to [#thisInstallDir#/WEB-INF/boxlang/config]' );
+						}
+						CFConfigService.transfer(
+							from		= previousServerFolder & '/WEB-INF/boxlang/config',
+							to			= thisInstallDir & '/WEB-INF/boxlang/config',
+							fromFormat	= 'boxlang',
+							toFormat	= 'boxlang',
+							fromVersion	= previousVersion,
+							toVersion	= thisVersion
+						);
+
+					} else if( thisEngine == 'adobe' ) {
 
 						if( interceptData.serverInfo.verbose ) {
 							logDebug( 'Copying from [#previousServerFolder#/WEB-INF/cfusion] to [#thisInstallDir#/WEB-INF/cfusion]' );
@@ -393,6 +407,7 @@ component {
 						).run();
 				}
 			} // end server context check
+			// BoxLang doesn't have an admin password ATM.  If we add one, add logic here to default it
 
 			var thisFormat = ( en contains 'lucee' ? 'lucee' : 'railo' ) & 'web';
 			var fromDetails = Util.resolveServerDetails( interceptData.serverInfo.name, thisFormat, 'from' );
@@ -465,7 +480,7 @@ component {
 
 		var en = interceptData.serverInfo.engineName;
 		// Bail right now if this server isn't a CF engine.
-		if( !( en contains 'lucee' || en contains 'railo' || en contains 'adobe' ) ) {
+		if( !( en contains 'lucee' || en contains 'railo' || en contains 'adobe' || en contains 'boxlang' ) ) {
 			return;
 		}
 
@@ -512,6 +527,9 @@ component {
 		}
 		if( baseEngineName == 'adobe' ) {
 			return baseEngineName;
+		}
+		if( baseEngineName contains 'boxlang' ) {
+			return 'boxlang';
 		}
 		return baseEngineName & context;
 	}

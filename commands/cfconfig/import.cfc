@@ -17,6 +17,9 @@
 *
 * For Adobe servers, point to the "cfusion" folder containing the lib/neo-runtime.xml file.
 * Ex: C:/ColdFusion11/cfusion
+*
+* For BoxLang servers, point to the BoxLang home containing the boxlang.json file.
+* Ex: C:/users/brad/.boxlang/config
 *   
 * For CommandBox servers, we'll get the engine/version out of CommandBox's metadata.  For non-CommandBox servers, you'll need to help me out by
 * specifying what kind of file format to use.
@@ -28,6 +31,7 @@
 * - adobe@11.0.11
 * - luceeWeb@5
 * - luceeServer@4.5
+* - boxlang@1
 * 
 * {code:bash}
 * cfconfig import from=/path/to/.CFConfig.json to=/path/to/server/home toFormat=luceeServer@5.1
