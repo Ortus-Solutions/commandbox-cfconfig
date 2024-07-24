@@ -525,11 +525,11 @@ component {
 		if( en contains 'railo' ) {
 			baseEngineName = 'railo';
 		}
+		if( en contains 'boxlang' ) {
+			return 'boxlang';
+		}
 		if( baseEngineName == 'adobe' ) {
 			return baseEngineName;
-		}
-		if( baseEngineName contains 'boxlang' ) {
-			return 'boxlang';
 		}
 		return baseEngineName & context;
 	}
