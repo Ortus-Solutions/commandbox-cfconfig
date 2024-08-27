@@ -33,6 +33,10 @@ component singleton {
 			var serverDetails = serverService.resolveServerDetails( {} );
 		}
 		var serverInfo = serverDetails.serverInfo;
+		var engineName = serverInfo.enginename;
+		if( !len( engineName ) ) {
+			engineName = serverInfo.CFEngine;
+		}
 
 		// Backwards compat for people on old CommandBox
 		serverInfo.multiContext = serverInfo.multiContext ?: false;
@@ -46,19 +50,19 @@ component singleton {
 			}
 
 			// If this is a Lucee server, assume the server context.  It's just way too much of a pain to specify this every single time!
-			if(  serverInfo.enginename contains 'lucee' && !results.format.len() ) {
+			if(  engineName contains 'lucee' && !results.format.len() ) {
 				results.format = ( preferWeb ? 'luceeWeb' : 'luceeServer' );
 			}
 
 			// If this is a Railo server, assume the server context.  It's just way too much of a pain to specify this every single time!
-			if(  serverInfo.enginename contains 'railo' && !results.format.len() ) {
+			if(  engineName contains 'railo' && !results.format.len() ) {
 				results.format = 'railoServer';
 			}
 
-			if( serverInfo.engineName contains 'boxlang' || serverinfo.CFEngine contains 'boxlang' ) {
+			if( engineName contains 'boxlang' || serverinfo.CFEngine contains 'boxlang' ) {
 				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/boxlang/config';
 				results.format = 'boxlang';
-			} else if( serverInfo.engineName contains 'adobe' ) {
+			} else if( engineName contains 'adobe' ) {
 				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/cfusion';
 				results.format = 'adobe';
 			} else if ( results.format == 'luceeServer' ) {
@@ -118,7 +122,7 @@ component singleton {
 			if( !results.path.len() ) {
 				throw(
 					message="CFConfig couldn't find the CF Home for [#fromToName#] CommandBox server [#serverInfo.name#]. #( !format.len() ? 'Please give me a hint with the format parameter' : '' )#",
-					detail="#( serverInfo.engineName contains 'lucee' ? 'This is a Lucee server, so you need to tell me if you want the web or server context. (luceeWeb/luceeServer format)' : '' )#",
+					detail="#( engineName contains 'lucee' ? 'This is a Lucee server, so you need to tell me if you want the web or server context. (luceeWeb/luceeServer format)' : '' )#",
 					type="cfconfigException"
 				);
 			}
