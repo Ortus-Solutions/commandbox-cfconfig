@@ -33,7 +33,7 @@ component singleton {
 			var serverDetails = serverService.resolveServerDetails( {} );
 		}
 		var serverInfo = serverDetails.serverInfo;
-		var engineName = serverInfo.enginename;
+		var engineName = serverInfo.enginename ?: '';
 		if( !len( engineName ) ) {
 			engineName = serverInfo.CFEngine;
 		}
