@@ -35,7 +35,7 @@ component singleton {
 		var serverInfo = serverDetails.serverInfo;
 		var engineName = serverInfo.enginename ?: '';
 		if( !len( engineName ) ) {
-			engineName = serverInfo.CFEngine;
+			engineName = serverInfo.CFEngine ?: '';
 		}
 
 		// Backwards compat for people on old CommandBox
@@ -59,7 +59,7 @@ component singleton {
 				results.format = 'railoServer';
 			}
 
-			if( engineName contains 'boxlang' || serverinfo.CFEngine contains 'boxlang' ) {
+			if( engineName contains 'boxlang' ) {
 				results.path = serverInfo.serverHomeDirectory & '/WEB-INF/boxlang/config';
 				results.format = 'boxlang';
 			} else if( engineName contains 'adobe' ) {
