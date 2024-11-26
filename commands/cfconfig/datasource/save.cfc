@@ -89,6 +89,7 @@ component {
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
 	* @toFormat The format to write to. Ex: LuceeServer@5
+	* @timezone Default timezone to set on the datasource.
 	*/
 	function run(
 		required string name,
@@ -145,7 +146,8 @@ component {
 		string bundleName,
 		string bundleVersion,
 		string to,
-		string toFormat
+		string toFormat,
+		string timezone
 	) {
 		var to = arguments.to ?: '';
 		var toFormat = arguments.toFormat ?: '';
