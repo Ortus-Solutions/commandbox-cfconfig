@@ -408,47 +408,48 @@ component {
 				}
 			} // end server context check
 			// BoxLang doesn't have an admin password ATM.  If we add one, add logic here to default it
-
-			var thisFormat = ( en contains 'lucee' ? 'lucee' : 'railo' ) & 'web';
-			var fromDetails = Util.resolveServerDetails( interceptData.serverInfo.name, thisFormat, 'from' );
-			var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version ).setCFHomePath( fromDetails.path );
-			var currentWebSettings = {};
-			if( oConfig.CFHomePathExists() ) {
-				currentWebSettings = oConfig.read().getMemento();
-			}
-
-			if( !len( currentWebSettings.adminPassword ?: '' ) && !len( currentWebSettings.hspw ?: '' ) && !len( currentWebSettings.pw ?: '' ) ) {
-				if( len( previousAdminPassPlain ) ) {
-					logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
-					command( 'cfconfig set' )
-						.params(
-							to=interceptData.serverInfo.name,
-							toFormat=thisFormat,
-							append = true,
-							adminPassword = previousAdminPassPlain
-						).run();
-				} else if( len( previousAdminPassHashed ) && len( previousAdminPassSalt ) ) {
-					logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
-					command( 'cfconfig set' )
-						.params(
-							to=interceptData.serverInfo.name,
-							toFormat=thisFormat,
-							append = true,
-							hspw = previousAdminPassHashed,
-							adminSalt = previousAdminPassSalt
-						).run();
-				} else if( (interceptData.serverInfo.profile ?: '') == 'production' ) {
-					logWarn( 'No Web context admin password found and profile is production. Setting your admin password to [#randomPass#]' );
-					command( 'cfconfig set' )
-						.params(
-							to=interceptData.serverInfo.name,
-							toFormat=thisFormat,
-							append = true,
-							adminPassword = randomPass
-						).run();
+			// Lucee 7+ doesn't have a web context
+			if( val( listFirst( fromDetails.version, '.' ) ) <= 6 ) {
+				var thisFormat = ( en contains 'lucee' ? 'lucee' : 'railo' ) & 'web';
+				var fromDetails = Util.resolveServerDetails( interceptData.serverInfo.name, thisFormat, 'from' );
+				var oConfig = CFConfigService.determineProvider( fromDetails.format, fromDetails.version ).setCFHomePath( fromDetails.path );
+				var currentWebSettings = {};
+				if( oConfig.CFHomePathExists() ) {
+					currentWebSettings = oConfig.read().getMemento();
 				}
-			} // end webcontext check
 
+				if( !len( currentWebSettings.adminPassword ?: '' ) && !len( currentWebSettings.hspw ?: '' ) && !len( currentWebSettings.pw ?: '' ) ) {
+					if( len( previousAdminPassPlain ) ) {
+						logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
+						command( 'cfconfig set' )
+							.params(
+								to=interceptData.serverInfo.name,
+								toFormat=thisFormat,
+								append = true,
+								adminPassword = previousAdminPassPlain
+							).run();
+					} else if( len( previousAdminPassHashed ) && len( previousAdminPassSalt ) ) {
+						logWarn( 'No Web context admin password found. Setting your admin password to the same as your Server context password.' );
+						command( 'cfconfig set' )
+							.params(
+								to=interceptData.serverInfo.name,
+								toFormat=thisFormat,
+								append = true,
+								hspw = previousAdminPassHashed,
+								adminSalt = previousAdminPassSalt
+							).run();
+					} else if( (interceptData.serverInfo.profile ?: '') == 'production' ) {
+						logWarn( 'No Web context admin password found and profile is production. Setting your admin password to [#randomPass#]' );
+						command( 'cfconfig set' )
+							.params(
+								to=interceptData.serverInfo.name,
+								toFormat=thisFormat,
+								append = true,
+								adminPassword = randomPass
+							).run();
+					}
+				} // end webcontext check
+			}
 		} // end what engine?
 
 		// If there is a custom Adobe /cf_scripts/scripts path, let CommandBox know about it
