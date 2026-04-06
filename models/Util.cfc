@@ -16,7 +16,7 @@ component singleton {
 	/**
 	* @from The to or from value specified to the command
 	* @format The given format of the to or from value
-	* @fromToName The desinator "to" or "from" to know what we're looking up for better error messages
+	* @fromToName The designator "to" or "from" to know what we're looking up for better error messages
 	*/
 	function resolveServerDetails( string from, string format, string fromToName='', boolean preferWeb=false ) {
 		var results = {
@@ -121,7 +121,7 @@ component singleton {
 
 			if( !results.path.len() ) {
 				throw(
-					message="CFConfig couldn't find the CF Home for [#fromToName#] CommandBox server [#serverInfo.name#]. #( !format.len() ? 'Please give me a hint with the format parameter' : '' )#",
+					message="CFConfig couldn't find the CF Home for [#fromToName#] CommandBox server [#serverInfo.name#]. #( !format.len() ? 'Please give me a hint with the format argument' : '' )#",
 					detail="#( engineName contains 'lucee' ? 'This is a Lucee server, so you need to tell me if you want the web or server context. (luceeWeb/luceeServer format)' : '' )#",
 					type="cfconfigException"
 				);
@@ -144,12 +144,12 @@ component singleton {
 			results.format = guessedFormat.format;
 			results.version = guessedFormat.version;
 
-			// Overrid with user-provided format
+			// Override with user-provided format
 			if( format.len() ) {
 				results.format = listFirst( format, '@' );
 			}
 
-			// Overrid with user-provided version
+			// Override with user-provided version
 			if( format.listLen( '@' ) > 1 ) {
 				results.version = listLast( format, '@' );
 			}

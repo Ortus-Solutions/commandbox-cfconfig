@@ -1,7 +1,7 @@
 /**
 * Add a new cache or update an existing cache.  Existing caches will be matched based on the name.
 * 
-* You can use a the "type" parameter as a shortcut for specifying the full Java class, which may change between versions.
+* You can use a the "type" argument as a shortcut for specifying the full Java class, which may change between versions.
 * 
 * {code}
 * cfconfig cache save myCache RAM
@@ -16,8 +16,8 @@
 * cfconfig cache save name=myCache class=lucee.runtime.cache.ram.RamCache to=/path/to/server/home
 * {code}
 * 
-* If your cache provider expects custom properties, pass them as additional parameters to this
-* command prefixed with the text "custom:". This requires named parameters, of course.
+* If your cache provider expects custom properties, pass them as additional arguments to this
+* command prefixed with the text "custom:". This requires named arguments, of course.
 * 
 * {code}
 * cfconfig cache save name=myCache type=RAM custom:timeToIdleSeconds=0 custom:timeToLiveSeconds=0
@@ -42,7 +42,7 @@ component {
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
-	* @toFormat The format to write to. Ex: LuceeServer@5
+	* @toFormat The format to write to. Ex: LuceeServer@7
 	*/	
 	function run(
 		required string name,

@@ -2,9 +2,9 @@
 * Add a new scheduled task or update an existing scheduled task.  Existing scheduled tasks will be matched based on the host name.
 *
 * {code}
-* cfconfig task save myTask http://www.google.com Once 4/13/2018 "5:00 PM"
-* cfconfig task save task=myTask url=http://www.google.com interval=Once startDate=4/13/2018 startTime="5:00 PM" to=serverName
-* cfconfig task save task=myTask url=http://www.google.com interval=Once startDate=4/13/2018 startTime="5:00 PM" to=/path/to/server/home
+* cfconfig task save myTask http://www.google.com Once 4/2/2026 "5:00 PM"
+* cfconfig task save task=myTask url=http://www.google.com interval=Once startDate=4/2/2026 startTime="5:00 PM" to=serverName
+* cfconfig task save task=myTask url=http://www.google.com interval=Once startDate=4/2/2026 startTime="5:00 PM" to=/path/to/server/home
 * {code}
 *
 */
@@ -29,7 +29,7 @@ component {
 	* @httpPort The port for the main task URL
 	* @httpProxyPort The port for the proxy server
 	* @interval The type of schedule. Once, Weekly, Daily, Monthly, an integer containing the number of seconds between runs
-	* @misfire What to do in case of a misfire.  Ignore, FireNow, invokeHander (Adobe only)
+	* @misfire What to do in case of a misfire.  Ignore, FireNow, invokeHandler (Adobe only)
 	* @oncomplete Comma-separated list of chained tasks to be run after the completion of the current task (task1:group1,task2:group2...) (Adobe only)
 	* @onexception Specify what to do if a task results in error. Ignore, Pause, ReFire, InvokeHandler (Adobe only)
 	* @overwrite Overwrite the log file? (Adobe only)
@@ -44,7 +44,7 @@ component {
 	* @resolveurl When saving output of task to file, Resolve internal URLs so that links remain intact.
 	* @retrycount The number of reattempts if the task results in an error. (Adobe only)
 	* @startDate The date to start executing the task
-	* @startTime The date to end excuting the task
+	* @startTime The date to end executing the task
 	* @status The current status of the task.  Running, Paused
 	* @username Basic auth username to use when hitting URL
 	* @autoDelete (Lucee only)
@@ -53,7 +53,7 @@ component {
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
-	* @toFormat The format to write to. Ex: LuceeServer@5
+	* @toFormat The format to write to. Ex: LuceeServer@7
 	*/
 	function run(
 		required string task,

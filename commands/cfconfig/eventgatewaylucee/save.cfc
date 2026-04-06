@@ -1,5 +1,5 @@
 /**
-* Add a new lucee event gateway instance or update an existing event gateway config. Existing event gateway instance will be matched based on gateway Id.
+* Add a new Lucee event gateway instance or update an existing event gateway config. Existing event gateway instance will be matched based on gateway Id.
 * 
 * {code}
 * cfconfig eventgatewaylucee save myGateway lucee.extension.gateway.AsynchronousEvents
@@ -15,14 +15,14 @@ component {
 
 	/**
 	* @gatewayId An event gateway ID to identify the specific event gateway instance.
-	* @CFCPath Component path (dot delimieted) to the gateway CFC
-	* @ListenerCFCPath Component path (dot delimieted) to the listener CFC
+	* @CFCPath Component path (dot delimited) to the gateway CFC
+	* @ListenerCFCPath Component path (dot delimited) to the listener CFC
 	* @custom A struct of additional configuration for this gateway
 	* @startupMode The startup mode of the gateway.  Values: manual, automatic, disabled
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
-	* @toFormat The format to write to. Ex: LuceeServer@5
+	* @toFormat The format to write to. Ex: LuceeServer@7
 	*/
 	function run(required string gatewayID,
 					required string CFCPath,

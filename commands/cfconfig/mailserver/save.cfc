@@ -15,7 +15,7 @@ component {
 	property name="serverService" inject="ServerService";
 	
 	/**
-	* @idleTimout Idle timeout in seconds
+	* @idleTimeout Idle timeout in seconds
 	* @lifeTimeout Overall timeout in seconds
 	* @password Plain text password for mail server
 	* @port Port for mail server
@@ -26,7 +26,7 @@ component {
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
-	* @toFormat The format to write to. Ex: LuceeServer@5
+	* @toFormat The format to write to. Ex: LuceeServer@7
 	*/	
 	function run(
 		string smtp,

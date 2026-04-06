@@ -36,13 +36,13 @@ component {
 	* @allowAlter Allow alter operations
 	* @allowStoredProcs Allow Stored proc calls
 	* @blob Enable blob
-	* @blobBuffer Number of bytes to retreive in binary fields
+	* @blobBuffer Number of bytes to retrieve in binary fields
 	* @class Java class of driver
 	* @clob Enable clob
-	* @clobBuffer Number of chars to retreive in long text fields
-	* @maintainConnections Maintain connections accross client requests
+	* @clobBuffer Number of chars to retrieve in long text fields
+	* @maintainConnections Maintain connections across client requests
 	* @sendStringParametersAsUnicode Enable High ASCII characters and Unicode for data sources configured for non-Latin characters
-	* @connectionLimit Max number of connections. -1 means unlimimted
+	* @connectionLimit Max number of connections. -1 means unlimited
 	* @connectionTimeout Connectiontimeout in minutes
 	* @connectionTimeoutInterval Number of seconds connections are checked to see if they've timed out
 	* @liveTimeout Connection timeout in minutes
@@ -88,7 +88,7 @@ component {
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
-	* @toFormat The format to write to. Ex: LuceeServer@5
+	* @toFormat The format to write to. Ex: LuceeServer@7
 	* @timezone Default timezone to set on the datasource.
 	*/
 	function run(

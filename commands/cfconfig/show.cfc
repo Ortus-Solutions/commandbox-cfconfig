@@ -15,7 +15,7 @@ component {
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @from.optionsFileComplete true
 	* @from.optionsUDF serverNameComplete
-	* @fromFormat The format to read from. Ex: LuceeServer@5
+	* @fromFormat The format to read from. Ex: LuceeServer@7
 	*/	
 	function run( 
 		string property,

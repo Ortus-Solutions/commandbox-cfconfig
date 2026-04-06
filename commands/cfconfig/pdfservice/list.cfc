@@ -25,7 +25,7 @@ component {
 	* @from CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @from.optionsFileComplete true
 	* @from.optionsUDF serverNameComplete
-	* @fromFormat The format to read from. Ex: LuceeServer@5
+	* @fromFormat The format to read from. Ex: LuceeServer@7
 	* @JSON Set to try to receive PDF services back as a parsable JSON object
 	*/
 	function run(

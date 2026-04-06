@@ -9,18 +9,18 @@
 * cfconfig diff from=path/to/servers1/home to=path/to/server2/home
 * {code}
 *
-* Both the "to" or the "from" parameters will default to the CommandBox server in the current working directory
-* but you need to at least specicy one of them to be different.  To easily compare the CommandBox server in your CWD
-* you can just specify one alternative location to compare with
+* Both the "to" or the "from" arguments will default to the CommandBox server in the current working directory
+* but you need to at least specify one of them to be different.  To easily compare the CommandBox server in your CWD
+* you can just specify one alternative location to compare with.
 *
 * {code:bash}
 * cfconfig diff to=path/to/.CFConfig.json
 * {code}
 *
-* CFConfig will guess the to and from format based on the files in the directory.  The toFormat and fromFormat
+* CFConfig will guess the "to" and "from" formats based on the files in the directory.  The "toFormat" and "fromFormat"
 * are only needed in case CFConfig can't guess the server formats, or is guessing incorrectly.
 *
-* By default, this command will show properties that are populated in at least one location.  (The equivilent
+* By default, this command will show properties that are populated in at least one location.  (The equivalent
 * of (toOnly, fromOnly, and bothPopulated).  You may override this to control which values you see.  If you specify more than one
 * filter, they are additive, or a logical "OR".
 *
@@ -45,8 +45,8 @@ component {
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
-	* @fromFormat The format to read from when "from" is a directory. Ex: LuceeServer@5
-	* @toFormat The format to read from when "to" is a directory. Ex: LuceeServer@5
+	* @fromFormat The format to read from when "from" is a directory. Ex: adobe@2025
+	* @toFormat The format to read from when "to" is a directory. Ex: luceeServer@7
 	* @fromOnly Display properties only present in the "from" location
 	* @toOnly Display properties only present in the "to" location
 	* @bothPopulated Display properties that have a value populated for both locations
@@ -271,7 +271,7 @@ component {
 	}
 
 	/**
-	* Pads value with spaces or truncates as neccessary
+	* Pads value with spaces or truncates as necessary
 	*/
 	private function printColumnValue( required string text, required number columnWidth ) {
 		if( len( text ) > columnWidth ) {

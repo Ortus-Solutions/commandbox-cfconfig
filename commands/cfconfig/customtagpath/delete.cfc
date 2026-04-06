@@ -14,7 +14,7 @@ component {
 	property name='Util' inject='util@commandbox-cfconfig';
 	property name="serverService" inject="ServerService";
 	/**
-	* This will delete ALL mappings that match the supplied parameters
+	* This will delete ALL mappings that match the supplied arguments
 	*
 	* @index The CFConfig Index of the mapping
 	* @physical The physical path that the engine should search
@@ -27,7 +27,7 @@ component {
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
-	* @toFormat The format to write to. Ex: LuceeServer@5
+	* @toFormat The format to write to. Ex: LuceeServer@7
 	*/	
 	function run(
 		numeric index,
