@@ -11,8 +11,7 @@
     "projectURL":"https://github.com/Ortus-Solutions/commandbox-cfconfig",
     "scripts":{
         "onRelease":"publish",
-        "postPublish":"!git push --follow-tags",
-        "install":"install ID=C:\\Users\\Brad.development\\Documents\\GitHub\\commandbox-cfconfig directory=\"D:\\.Command Box\\cfml\\modules\" --force && r"
+        "postPublish":"!git push --follow-tags"
     },
     "ignore":[
         "**/.*",
