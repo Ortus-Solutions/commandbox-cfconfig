@@ -21,6 +21,8 @@ component {
 	* @layoutArguments A collection of arguments for this layout class in the format layoutArguments:key=value
 	* @layoutClass A full class path to a Layout class
 	* @level log level	
+	* @encoder The encoder to use for this logger.  The available options are "text" and "json" (BoxLang Only)
+	* @additive Additive logging: true means that this logger will inherit the appenders from the root logger.  (BoxLang Only)
 	* @to CommandBox server name, server home path, or CFConfig JSON file. Defaults to CommandBox server in CWD.
 	* @to.optionsFileComplete true
 	* @to.optionsUDF serverNameComplete
@@ -31,6 +33,7 @@ component {
 		string appender,
 		string appenderClass,
 		struct appenderArguments,
+		string encoder,
 		string layout,
 		string layoutClass,
 		struct layoutArguments,

@@ -90,6 +90,8 @@ component {
 						}
 					}
 					if( !isNull( loggerDetails.level ) ) { print.indentedLine( 'Level: #loggerDetails.level#' ); }
+					if( !isNull( loggerDetails.encoder ) ) { print.indentedLine( 'Encoder: #loggerDetails.encoder#' ); }
+					if( !isNull( loggerDetails.additive ) ) { print.indentedLine( 'Additive: #loggerDetails.additive#' ); }
 											
 					print.line();
 				}
