@@ -5,7 +5,7 @@ component {
 	property name='consoleLogger'	inject='logbox:logger:console';
 	property name='ConfigService'	inject='ConfigService';
 	property name='semanticVersion'	inject='provider:semanticVersion@semver';
-	property name='CFConfigService' inject='CFConfigService@cfconfig-services';
+	property name='CFConfigService' inject='provider:CFConfigService@cfconfig-services';
 
 	function onDIComplete() {
 		jobEnabled = getWirebox().getBinder().mappingExists( 'interactiveJob' );

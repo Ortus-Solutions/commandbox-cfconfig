@@ -196,13 +196,13 @@ component {
 		var longestProp = 2 + qryDiff.reduce( function( prev=0, row ) {
 			var thislen = row.propertyName.listLast( '-' ).len() + ( (row.propertyName.listLen( '-' )-1)*2 );
 			return ( thislen > prev ? thislen : prev );
-		} );
+		}, 0 );
 		var longestToValue = 2 + qryDiff.reduce( function( prev=0, row ) {
 			return ( len( row.toValue ) > prev ? len( row.toValue ) : prev );
-		} );
+		}, 0 );
 		var longestFromValue = 2 + qryDiff.reduce( function( prev=0, row ) {
 			return ( len( row.fromValue ) > prev ? len( row.fromValue ) : prev );
-		} );
+		}, 0 );
 
 		// Terminal width (minus 2 for good measure)
 		var termWidth = shell.getTermWidth()-2;
